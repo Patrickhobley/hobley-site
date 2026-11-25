@@ -14,9 +14,8 @@ const videos = items.filter((i) => i.kind === 'video').length;
 	description="Photography and video by Patrick Hobley: property interiors and exteriors, festivals, events and press."
 	scene={false}
 >
-	<header class="g-bar">
-		<a class="g-mark" href="/gallery/">hobley</a>
-		<nav class="g-menu" aria-label="Gallery menu">
+	<div class="g-menu" slot="extra">
+		<nav aria-label="Gallery categories">
 			<ul class="chips">
 				<li>
 					<button type="button" class="chip" data-filter="" aria-pressed="true">All</button>
@@ -50,8 +49,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 				}
 			</ul>
 		</nav>
-		<a class="g-home" href="/">Links</a>
-	</header>
+	</div>
 
 	<section class="g-wrap">
 		<h1 class="g-title">Gallery</h1>

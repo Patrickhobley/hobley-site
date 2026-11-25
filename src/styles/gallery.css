@@ -1,33 +1,6 @@
 /* Gallery: menu bar, masonry of photo prints, full-screen viewer */
-.g-bar {
-	position: sticky;
-	top: 0;
-	z-index: 5;
-	display: flex;
-	align-items: center;
-	gap: 1rem 1.5rem;
-	flex-wrap: wrap;
-	padding: 0.75rem var(--gutter);
-	background: color-mix(in srgb, var(--wall) 92%, transparent);
-	backdrop-filter: blur(8px);
-	border-bottom: 3px solid var(--accent);
-	box-shadow: 0 6px 0 var(--stripe-3);
-}
-.g-mark {
-	font-family: var(--display);
-	font-size: 2rem;
-	line-height: 1;
-	color: var(--accent);
-	text-decoration: none;
-	text-shadow: 2px 2px 0 var(--stripe-3);
-	transition: transform 0.2s;
-}
-.g-mark:hover {
-	transform: rotate(-3deg) scale(1.06);
-}
 .g-menu {
-	flex: 1 1 18rem;
-	min-width: 0;
+	padding: 0 var(--gutter);
 	overflow-x: auto;
 	scrollbar-width: none;
 }
@@ -60,18 +33,6 @@
 .chip[aria-pressed="true"] {
 	background: var(--accent);
 	color: var(--accent-ink);
-}
-.g-home {
-	font-weight: 800;
-	color: var(--paper);
-	text-decoration: none;
-	padding: 0.6rem 0.9rem;
-	border-radius: 999px;
-	border: 2px solid var(--line);
-}
-.g-home:hover {
-	background: var(--paper);
-	color: var(--ink-on-paper);
 }
 
 .g-wrap {
@@ -282,7 +243,6 @@
 }
 
 @media (max-width: 40rem) {
-	.g-bar { position: static; }
 	.grid { columns: 2 9rem; column-gap: 0.9rem; }
 	.grid > li { margin-bottom: 0.9rem; }
 }

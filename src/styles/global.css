@@ -116,6 +116,59 @@ p {
 	margin: 0;
 }
 
+/* Top bar */
+.site-bar {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	background: color-mix(in srgb, var(--wall) 90%, transparent);
+	backdrop-filter: blur(8px);
+	border-bottom: 3px solid var(--accent);
+	box-shadow: 0 5px 0 var(--stripe-3);
+}
+.bar-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.7rem var(--gutter);
+}
+.g-mark {
+	font-family: var(--display);
+	font-size: 2rem;
+	line-height: 1;
+	color: var(--accent);
+	text-decoration: none;
+	text-shadow: 2px 2px 0 var(--stripe-3);
+	transition: transform 0.2s;
+}
+.g-mark:hover {
+	color: var(--accent);
+	transform: rotate(-3deg) scale(1.06);
+}
+.bar-nav {
+	display: flex;
+	gap: 0.5rem;
+}
+.bar-nav a {
+	font-weight: 800;
+	font-size: 1rem;
+	color: var(--paper);
+	text-decoration: none;
+	padding: 0.55rem 1rem;
+	border-radius: 999px;
+	border: 2px solid transparent;
+	transition: background 0.15s, color 0.15s, transform 0.12s;
+}
+.bar-nav a:hover {
+	border-color: var(--paper);
+	transform: translateY(-1px);
+}
+.bar-nav a[aria-current="page"] {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+
 /* Link page */
 .links-page {
 	width: min(100% - 2 * var(--gutter), 30rem);
