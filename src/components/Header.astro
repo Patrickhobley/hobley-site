@@ -1,25 +1,11 @@
 ---
-// Top bar on every page: "hobley" goes home, plus the main menu.
+// Top bar on every page: just the "hobley" logo, which goes home.
 // Pages can add a second row (the gallery's category filters) through the "extra" slot.
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const items = [
-	{ label: 'Links', href: '/', current: path === '/' },
-	{ label: 'Gallery', href: '/gallery/', current: path.startsWith('/gallery') },
-];
 ---
 
 <header class="site-bar">
 	<div class="bar-row">
 		<a class="g-mark" href="/" aria-label="hobley, go to the home page">hobley</a>
-		<nav class="bar-nav" aria-label="Main menu">
-			{
-				items.map((item) => (
-					<a href={item.href} aria-current={item.current ? 'page' : undefined}>
-						{item.label}
-					</a>
-				))
-			}
-		</nav>
 	</div>
 	<slot name="extra" />
 </header>

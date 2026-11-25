@@ -146,28 +146,6 @@ p {
 	color: var(--accent);
 	transform: rotate(-3deg) scale(1.06);
 }
-.bar-nav {
-	display: flex;
-	gap: 0.5rem;
-}
-.bar-nav a {
-	font-weight: 800;
-	font-size: 1rem;
-	color: var(--paper);
-	text-decoration: none;
-	padding: 0.55rem 1rem;
-	border-radius: 999px;
-	border: 2px solid transparent;
-	transition: background 0.15s, color 0.15s, transform 0.12s;
-}
-.bar-nav a:hover {
-	border-color: var(--paper);
-	transform: translateY(-1px);
-}
-.bar-nav a[aria-current="page"] {
-	background: var(--accent);
-	color: var(--accent-ink);
-}
 
 /* Link page */
 .links-page {
