@@ -203,34 +203,49 @@ p {
 }
 .social-row {
 	list-style: none;
-	margin: 2.5rem 0 0;
+	max-width: 25rem;
+	margin: 3rem auto 0;
 	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
-	gap: 1rem;
+	gap: 1.5rem 1.4rem;
 }
 .social-icon {
 	display: grid;
 	place-items: center;
-	width: 3.25rem;
-	height: 3.25rem;
+	width: 4.5rem;
+	height: 4.5rem;
 	border-radius: 50%;
 	background: var(--paper);
 	color: var(--ink-on-paper);
-	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.32);
+	box-shadow:
+		0 0 0 3px var(--wall),
+		0 0 0 6px var(--accent),
+		7px 7px 0 3px rgba(0, 0, 0, 0.3);
+	transition:
+		transform 0.12s,
+		box-shadow 0.12s;
 }
 .social-icon svg {
-	width: 1.6rem;
-	height: 1.6rem;
+	width: 2.2rem;
+	height: 2.2rem;
 }
 .social-icon:hover {
 	background: var(--accent);
 	color: var(--accent-ink);
+	transform: translate(-2px, -2px);
+	box-shadow:
+		0 0 0 3px var(--wall),
+		0 0 0 6px var(--paper),
+		9px 9px 0 3px rgba(0, 0, 0, 0.3);
 }
 .social-icon:active {
-	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.32);
 	transform: translate(3px, 3px);
+	box-shadow:
+		0 0 0 3px var(--wall),
+		0 0 0 6px var(--accent),
+		2px 2px 0 3px rgba(0, 0, 0, 0.3);
 }
 .empty {
 	color: var(--mute);
