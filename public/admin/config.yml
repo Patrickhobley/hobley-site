@@ -7,9 +7,9 @@ site_url: https://hobley.me
 display_url: https://hobley.me
 logo_url: /favicon.svg
 
-# Uploaded photos and video files are saved in public/gallery and served from /gallery.
-media_folder: public/gallery
-public_folder: /gallery
+# Uploaded images are saved in public/images and served from /images.
+media_folder: public/images
+public_folder: /images
 
 media_libraries:
   default:
@@ -20,94 +20,64 @@ media_libraries:
         raster_image:
           format: webp
           quality: 85
-          width: 2400
-          height: 2400
+          width: 800
+          height: 800
         svg:
           optimize: true
 
 collections:
-  - name: gallery
-    label: Gallery
-    label_singular: gallery item
-    description: Photos and videos shown on the Work page.
-    folder: src/content/gallery
+  - name: links
+    label: Links
+    label_singular: link
+    description: The buttons on the home page. Lower numbers appear first.
+    folder: src/content/links
     extension: json
     format: json
     create: true
     slug: "{{slug}}"
     identifier_field: title
-    summary: "{{title}}"
-    sortable_fields: [title, date]
+    summary: "{{order}}. {{title}}"
+    sortable_fields: [order, title]
     fields:
-      - label: Title
+      - label: Button text
         name: title
         widget: string
-      - label: Type
-        name: kind
-        widget: select
-        default: image
-        options:
-          - { label: Photo, value: image }
-          - { label: Video, value: video }
-      - label: Photo (or video cover image)
-        name: image
-        widget: image
-        required: false
-        hint: Upload the photo here. For a video, this is the cover shown in the gallery.
-      - label: Photo description
-        name: alt
+      - label: Web address
+        name: url
         widget: string
-        required: false
-        hint: A short description of what is in the picture, for people using screen readers.
-      - label: Video link
-        name: video_url
-        widget: string
-        required: false
-        hint: Paste a YouTube or Vimeo link. Vimeo videos also need a cover image above.
-      - label: Video file
-        name: video_file
-        widget: file
-        required: false
-        choose_url: false
-        hint: Or upload an MP4 up to 25 MB. For longer videos use a YouTube or Vimeo link.
-      - label: Caption
-        name: caption
-        widget: text
-        required: false
-      - label: Tags
-        name: tags
-        widget: relation
-        collection: tags
-        value_field: "{{slug}}"
-        search_fields: [title]
-        display_fields: [title]
-        multiple: true
-        required: false
-        hint: Pick as many as fit. Add new tags under Tags in the menu.
-      - label: Date
-        name: date
-        widget: datetime
-        date_format: YYYY-MM-DD
-        time_format: false
-        default: "{{now}}"
-        hint: Newest items appear first.
-      - label: Show near the top of the home page
-        name: featured
+        pattern: ["^https?://.+", "Start with http:// or https://"]
+        hint: The full address the button opens, for example https://www.instagram.com/hobley/
+      - label: Position
+        name: order
+        widget: number
+        value_type: int
+        min: 1
+        default: 50
+        hint: Lower numbers appear first. Use gaps like 10, 20, 30 so you can slot new buttons in between.
+      - label: This is an affiliate link
+        name: sponsored
         widget: boolean
         default: false
+        required: false
+        hint: Tick this for paid or affiliate links such as Amazon.
 
-  - name: tags
-    label: Tags
-    label_singular: tag
-    description: The categories used to filter the Work page. Rename or add them here.
-    folder: src/content/tags
-    extension: json
-    format: json
-    create: true
-    slug: "{{slug}}"
-    identifier_field: title
-    summary: "{{title}}"
-    fields:
-      - label: Name
-        name: title
-        widget: string
+  - name: pages
+    label: Profile
+    files:
+      - name: profile
+        label: Profile
+        file: src/content/profile.json
+        format: json
+        fields:
+          - label: Name
+            name: name
+            widget: string
+          - label: Line under the name
+            name: subtitle
+            widget: string
+            required: false
+          - label: Picture
+            name: avatar
+            widget: image
+            required: false
+            hint: Upload a square picture. It is shown as a circle.
