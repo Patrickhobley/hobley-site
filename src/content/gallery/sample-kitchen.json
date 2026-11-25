@@ -1,0 +1,12 @@
+{
+  "title": "Sample: Kitchen",
+  "kind": "image",
+  "image": "/gallery/sample-kitchen.jpg",
+  "alt": "Sample image: Kitchen",
+  "caption": "Pendant lights over the island. Placeholder, replace with your own work.",
+  "tags": [
+    "interiors"
+  ],
+  "date": "2026-11-17",
+  "featured": false
+}

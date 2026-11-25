@@ -1,0 +1,12 @@
+{
+  "title": "Sample: Bedroom",
+  "kind": "image",
+  "image": "/gallery/sample-bedroom.jpg",
+  "alt": "Sample image: Bedroom",
+  "caption": "Morning light in the main bedroom. Placeholder, replace with your own work.",
+  "tags": [
+    "interiors"
+  ],
+  "date": "2026-11-13",
+  "featured": false
+}

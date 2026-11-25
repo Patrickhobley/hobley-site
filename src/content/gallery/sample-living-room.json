@@ -1,0 +1,12 @@
+{
+  "title": "Sample: Living room",
+  "kind": "image",
+  "image": "/gallery/sample-living-room.jpg",
+  "alt": "Sample image: Living room",
+  "caption": "Soft window light in a lounge. Placeholder, replace with your own work.",
+  "tags": [
+    "interiors"
+  ],
+  "date": "2026-11-20",
+  "featured": true
+}

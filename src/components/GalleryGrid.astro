@@ -27,12 +27,14 @@ const { items } = Astro.props;
 					data-tag-titles={item.tags.map((t) => t.title).join(', ')}
 					aria-label={`${item.kind === 'video' ? 'Play video: ' : 'View photo: '}${item.title}`}
 				>
-					{item.thumb ? (
-						<img src={item.thumb} alt="" loading="lazy" decoding="async" />
-					) : (
-						<span class="tile-blank">{item.title}</span>
-					)}
-					{item.kind === 'video' && <span class="play" aria-hidden="true" />}
+					<span class="tile-photo">
+						{item.thumb ? (
+							<img src={item.thumb} alt="" loading="lazy" decoding="async" />
+						) : (
+							<span class="tile-blank">{item.title}</span>
+						)}
+						{item.kind === 'video' && <span class="play" aria-hidden="true" />}
+					</span>
 					<span class="tile-title">{item.title}</span>
 				</button>
 			</li>
