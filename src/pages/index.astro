@@ -11,6 +11,9 @@ const links = (await getCollection('links')).sort(byOrder);
 const socials = (await getCollection('socials')).sort(byOrder);
 
 const isEmail = (url: string) => url.startsWith('mailto:');
+// Links to this site open in the same tab and stay on whichever address you are using.
+const isHome = (url: string) => /^https?:\/\/(www\.)?hobley\.me(\/|$)/.test(url);
+const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?hobley\.me/, '') || '/' : url);
 ---
 
 <Base>
@@ -36,10 +39,10 @@ const isEmail = (url: string) => url.startsWith('mailto:');
 						<li style={`--i:${i}`}>
 							<a
 								class="link-button"
-								href={link.data.url}
-								target={isEmail(link.data.url) ? undefined : '_blank'}
+								href={href(link.data.url)}
+								target={isEmail(link.data.url) || isHome(link.data.url) ? undefined : '_blank'}
 								rel={
-									isEmail(link.data.url)
+									isEmail(link.data.url) || isHome(link.data.url)
 										? undefined
 										: link.data.sponsored
 											? 'noopener noreferrer sponsored'

@@ -8,9 +8,11 @@ interface Props {
 	title?: string;
 	description?: string;
 	image?: string;
+	/** Turn off the 3D backdrop (used by the gallery so photos sit on a calm wall). */
+	scene?: boolean;
 }
 
-const { title, description = SITE_DESCRIPTION, image } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image, scene = true } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 ---
 
@@ -20,7 +22,7 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 		<BaseHead title={fullTitle} description={description} image={image} />
 	</head>
 	<body>
-		<Scene />
+		{scene && <Scene />}
 		<a class="skip" href="#content">Skip to content</a>
 		<main id="content">
 			<slot />

@@ -1,0 +1,12 @@
+{
+  "title": "Sample: Press portrait",
+  "kind": "image",
+  "image": "/gallery/sample-press-portrait.jpg",
+  "alt": "Sample image: Press portrait",
+  "caption": "A portrait for a press feature. Placeholder, replace with your own work.",
+  "tags": [
+    "press"
+  ],
+  "date": "2026-11-16",
+  "featured": false
+}

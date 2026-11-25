@@ -1,0 +1,71 @@
+---
+import Base from '../../layouts/Base.astro';
+import GalleryGrid from '../../components/GalleryGrid.astro';
+import { getGallery } from '../../lib/gallery';
+import '../../styles/gallery.css';
+
+const { items, usedTags } = await getGallery();
+const photos = items.filter((i) => i.kind === 'image').length;
+const videos = items.filter((i) => i.kind === 'video').length;
+---
+
+<Base
+	title="Gallery"
+	description="Photography and video by Patrick Hobley: property interiors and exteriors, festivals, events and press."
+	scene={false}
+>
+	<header class="g-bar">
+		<a class="g-mark" href="/gallery/">hobley</a>
+		<nav class="g-menu" aria-label="Gallery menu">
+			<ul class="chips">
+				<li>
+					<button type="button" class="chip" data-filter="" aria-pressed="true">All</button>
+				</li>
+				{
+					photos > 0 && (
+						<li>
+							<button type="button" class="chip" data-filter="kind:image" aria-pressed="false">
+								Photos
+							</button>
+						</li>
+					)
+				}
+				{
+					videos > 0 && (
+						<li>
+							<button type="button" class="chip" data-filter="kind:video" aria-pressed="false">
+								Videos
+							</button>
+						</li>
+					)
+				}
+				{
+					usedTags.map((tag) => (
+						<li>
+							<button type="button" class="chip" data-filter={tag.slug} aria-pressed="false">
+								{tag.title}
+							</button>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+		<a class="g-home" href="/">Links</a>
+	</header>
+
+	<section class="g-wrap">
+		<h1 class="g-title">Gallery</h1>
+		{
+			items.length > 0 ? (
+				<>
+					<GalleryGrid items={items} />
+					<p class="g-empty" data-filter-empty hidden>
+						Nothing in this category yet.
+					</p>
+				</>
+			) : (
+				<p class="g-empty">New work is on its way. Check back soon.</p>
+			)
+		}
+	</section>
+</Base>

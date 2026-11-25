@@ -1,0 +1,12 @@
+{
+  "title": "Sample: House exterior",
+  "kind": "image",
+  "image": "/gallery/sample-house-exterior.jpg",
+  "alt": "Sample image: House exterior",
+  "caption": "Front elevation on a clear day. Placeholder, replace with your own work.",
+  "tags": [
+    "exteriors"
+  ],
+  "date": "2026-11-19",
+  "featured": true
+}

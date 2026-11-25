@@ -1,0 +1,12 @@
+{
+  "title": "Sample: Hallway",
+  "kind": "image",
+  "image": "/gallery/sample-hallway.jpg",
+  "alt": "Sample image: Hallway",
+  "caption": "A hallway leading to the light. Placeholder, replace with your own work.",
+  "tags": [
+    "interiors"
+  ],
+  "date": "2026-11-14",
+  "featured": false
+}

@@ -1,0 +1,293 @@
+/* Gallery: menu bar, masonry of photo prints, full-screen viewer */
+.g-bar {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	display: flex;
+	align-items: center;
+	gap: 1rem 1.5rem;
+	flex-wrap: wrap;
+	padding: 0.75rem var(--gutter);
+	background: color-mix(in srgb, var(--wall) 92%, transparent);
+	backdrop-filter: blur(8px);
+	border-bottom: 3px solid var(--accent);
+	box-shadow: 0 6px 0 var(--stripe-3);
+}
+.g-mark {
+	font-family: var(--display);
+	font-size: 2rem;
+	line-height: 1;
+	color: var(--accent);
+	text-decoration: none;
+	text-shadow: 2px 2px 0 var(--stripe-3);
+	transition: transform 0.2s;
+}
+.g-mark:hover {
+	transform: rotate(-3deg) scale(1.06);
+}
+.g-menu {
+	flex: 1 1 18rem;
+	min-width: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.g-menu::-webkit-scrollbar {
+	display: none;
+}
+.chips {
+	list-style: none;
+	display: flex;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0.2rem 0.3rem 0.5rem;
+	width: max-content;
+}
+.chip {
+	font: 800 1rem/1 var(--text);
+	padding: 0.6rem 1rem;
+	border: 2px solid var(--accent);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--accent);
+	cursor: pointer;
+	box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+	transition: transform 0.12s, background 0.15s, color 0.15s;
+}
+.chip:hover {
+	transform: translate(-1px, -2px) rotate(-1.5deg);
+	background: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.chip[aria-pressed="true"] {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+.g-home {
+	font-weight: 800;
+	color: var(--paper);
+	text-decoration: none;
+	padding: 0.6rem 0.9rem;
+	border-radius: 999px;
+	border: 2px solid var(--line);
+}
+.g-home:hover {
+	background: var(--paper);
+	color: var(--ink-on-paper);
+}
+
+.g-wrap {
+	width: min(100% - 2 * var(--gutter), 90rem);
+	margin: 0 auto;
+	padding: 2.25rem 0 1rem;
+}
+.g-title {
+	font-size: clamp(2.6rem, 8vw, 5rem);
+	color: var(--accent);
+	text-shadow: 3px 3px 0 var(--stripe-3), 6px 6px 0 rgba(0, 0, 0, 0.3);
+	margin-bottom: 1.5rem;
+}
+.g-empty {
+	color: var(--mute);
+	text-align: center;
+	padding: 3rem 0;
+}
+
+.grid {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	columns: 3 17rem;
+	column-gap: 1.5rem;
+}
+.grid > li {
+	break-inside: avoid;
+	margin: 0 0 1.5rem;
+	perspective: 800px;
+}
+.grid > li[hidden] {
+	display: none;
+}
+.tile {
+	display: block;
+	width: 100%;
+	padding: 0.6rem 0.6rem 0.2rem;
+	border: 0;
+	border-radius: 3px;
+	background: var(--paper);
+	color: var(--ink-on-paper);
+	font: inherit;
+	text-align: left;
+	cursor: zoom-in;
+	box-shadow: 6px 7px 0 rgba(0, 0, 0, 0.3);
+	transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.3), box-shadow 0.25s;
+}
+.grid > li:nth-child(3n + 1) .tile { rotate: -0.8deg; }
+.grid > li:nth-child(3n + 2) .tile { rotate: 0.6deg; }
+.grid > li:nth-child(3n) .tile { rotate: -0.3deg; }
+.tile:hover,
+.tile:focus-visible {
+	rotate: 0deg;
+	transform: translateY(-6px) rotateX(4deg) scale(1.02);
+	box-shadow: 10px 14px 0 rgba(0, 0, 0, 0.3), 0 0 0 4px var(--accent);
+}
+.tile-photo {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	background: var(--line);
+}
+.tile-photo img {
+	width: 100%;
+	height: auto;
+	transition: transform 0.5s ease;
+}
+.tile:hover .tile-photo img {
+	transform: scale(1.06);
+}
+.tile-blank {
+	display: grid;
+	place-items: center;
+	aspect-ratio: 4 / 3;
+	padding: 1rem;
+	color: var(--paper);
+}
+.tile-title {
+	display: block;
+	padding: 0.7rem 0.2rem 0.8rem;
+	font-weight: 800;
+	font-size: 1.05rem;
+}
+.play {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	background: rgba(22, 63, 58, 0.25);
+}
+.play::after {
+	content: "";
+	width: 4.2rem;
+	height: 4.2rem;
+	border-radius: 50%;
+	background: var(--accent);
+	box-shadow: 0 0 0 4px var(--wall), 4px 5px 0 4px rgba(0, 0, 0, 0.35);
+}
+.play::before {
+	content: "";
+	position: absolute;
+	z-index: 1;
+	border-style: solid;
+	border-width: 0.8rem 0 0.8rem 1.3rem;
+	border-color: transparent transparent transparent var(--accent-ink);
+	margin-left: 0.3rem;
+}
+
+/* Scroll reveal where the browser supports it */
+@keyframes g-reveal {
+	from { opacity: 0; transform: translateY(2.5rem) scale(0.94); }
+}
+@supports (animation-timeline: view()) {
+	.grid > li {
+		animation: g-reveal linear both;
+		animation-timeline: view();
+		animation-range: entry 0% entry 45%;
+	}
+}
+
+/* Viewer */
+.viewer {
+	width: min(96vw, 80rem);
+	max-width: none;
+	max-height: 96vh;
+	padding: 0;
+	border: 4px solid var(--accent);
+	border-radius: 6px;
+	background: #0d2926;
+	color: var(--paper);
+	box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.5);
+}
+.viewer[open] {
+	animation: g-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3);
+}
+@keyframes g-pop {
+	from { opacity: 0; transform: scale(0.9) rotateX(8deg); }
+}
+.viewer::backdrop {
+	background: rgba(5, 20, 18, 0.88);
+	backdrop-filter: blur(4px);
+}
+.viewer-body {
+	display: grid;
+	gap: 0.75rem;
+	padding: 0.75rem;
+}
+.viewer-stage {
+	display: grid;
+	place-items: center;
+	min-height: 12rem;
+}
+.viewer-stage img,
+.viewer-stage video {
+	max-width: 100%;
+	max-height: 72vh;
+	width: auto;
+	height: auto;
+	object-fit: contain;
+}
+.viewer-stage iframe.embed {
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	max-height: 72vh;
+	border: 0;
+}
+.viewer-info p {
+	margin: 0;
+}
+.viewer-title {
+	font-family: var(--display);
+	font-size: 1.6rem;
+	color: var(--accent);
+}
+.viewer-caption,
+.viewer-tags {
+	color: var(--mute);
+	font-size: 1rem;
+}
+.viewer-caption:empty,
+.viewer-tags:empty {
+	display: none;
+}
+.viewer-controls {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+}
+.viewer-controls button {
+	font: 800 1rem/1 var(--text);
+	padding: 0.75rem 1.2rem;
+	border: 2px solid var(--accent);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--accent);
+	cursor: pointer;
+}
+.viewer-controls button:hover {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+.viewer-controls [data-close] {
+	margin-left: auto;
+	background: var(--paper);
+	border-color: var(--paper);
+	color: var(--ink-on-paper);
+}
+
+@media (max-width: 40rem) {
+	.g-bar { position: static; }
+	.grid { columns: 2 9rem; column-gap: 0.9rem; }
+	.grid > li { margin-bottom: 0.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.grid > li,
+	.viewer[open] { animation: none !important; }
+	.tile, .tile-photo img { transition: none; }
+}

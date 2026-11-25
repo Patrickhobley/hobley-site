@@ -1,0 +1,169 @@
+---
+import type { GalleryItem } from '../lib/gallery';
+
+interface Props {
+	items: GalleryItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="grid" data-grid>
+	{
+		items.map((item) => (
+			<li>
+				<button
+					type="button"
+					class="tile"
+					data-tile
+					data-title={item.title}
+					data-caption={item.caption}
+					data-alt={item.alt}
+					data-kind={item.kind}
+					data-image={item.image ?? ''}
+					data-embed={item.embed ?? ''}
+					data-video-file={item.videoFile ?? ''}
+					data-tag-slugs={item.tags.map((t) => t.slug).join(' ')}
+					data-tag-titles={item.tags.map((t) => t.title).join(', ')}
+					aria-label={`${item.kind === 'video' ? 'Play video: ' : 'View photo: '}${item.title}`}
+				>
+					<span class="tile-photo">
+						{item.thumb ? (
+							<img src={item.thumb} alt="" loading="lazy" decoding="async" />
+						) : (
+							<span class="tile-blank">{item.title}</span>
+						)}
+						{item.kind === 'video' && <span class="play" aria-hidden="true" />}
+					</span>
+					<span class="tile-title">{item.title}</span>
+				</button>
+			</li>
+		))
+	}
+</ul>
+
+<dialog id="viewer" class="viewer" aria-label="Viewer">
+	<div class="viewer-body">
+		<div class="viewer-stage" data-stage></div>
+		<div class="viewer-info">
+			<p class="viewer-title" data-viewer-title></p>
+			<p class="viewer-caption" data-viewer-caption></p>
+			<p class="viewer-tags" data-viewer-tags></p>
+		</div>
+		<div class="viewer-controls">
+			<button type="button" data-prev>Previous</button>
+			<button type="button" data-next>Next</button>
+			<button type="button" data-close>Close</button>
+		</div>
+	</div>
+</dialog>
+
+<script>
+	const grid = document.querySelector('[data-grid]');
+	const dialog = document.querySelector('#viewer');
+
+	if (grid && dialog instanceof HTMLDialogElement) {
+		const tiles = Array.from(grid.querySelectorAll('[data-tile]'));
+		const stage = dialog.querySelector('[data-stage]');
+		const titleEl = dialog.querySelector('[data-viewer-title]');
+		const captionEl = dialog.querySelector('[data-viewer-caption]');
+		const tagsEl = dialog.querySelector('[data-viewer-tags]');
+		let current = 0;
+
+		const visibleTiles = () => tiles.filter((tile) => !tile.closest('li')?.hidden);
+
+		function render(tile) {
+			const d = tile.dataset;
+			stage.replaceChildren();
+			let el = null;
+			if (d.embed) {
+				el = document.createElement('iframe');
+				el.src = d.embed;
+				el.title = d.title;
+				el.allow = 'autoplay; fullscreen; picture-in-picture';
+				el.allowFullscreen = true;
+				el.className = 'embed';
+			} else if (d.videoFile) {
+				el = document.createElement('video');
+				el.src = d.videoFile;
+				el.controls = true;
+				el.playsInline = true;
+				el.autoplay = true;
+				if (d.image) el.poster = d.image;
+			} else if (d.image) {
+				el = document.createElement('img');
+				el.src = d.image;
+				el.alt = d.alt || d.title;
+			}
+			if (el) stage.append(el);
+			titleEl.textContent = d.title;
+			captionEl.textContent = d.caption || '';
+			tagsEl.textContent = d.tagTitles || '';
+		}
+
+		function open(tile) {
+			current = Math.max(0, visibleTiles().indexOf(tile));
+			render(tile);
+			if (!dialog.open) dialog.showModal();
+		}
+
+		function step(direction) {
+			const list = visibleTiles();
+			if (!list.length) return;
+			current = (current + direction + list.length) % list.length;
+			render(list[current]);
+		}
+
+		tiles.forEach((tile) => tile.addEventListener('click', () => open(tile)));
+		dialog.querySelector('[data-close]').addEventListener('click', () => dialog.close());
+		dialog.querySelector('[data-prev]').addEventListener('click', () => step(-1));
+		dialog.querySelector('[data-next]').addEventListener('click', () => step(1));
+		dialog.addEventListener('close', () => stage.replaceChildren());
+		dialog.addEventListener('click', (event) => {
+			if (event.target === dialog) dialog.close();
+		});
+		dialog.addEventListener('keydown', (event) => {
+			if (event.key === 'ArrowRight') step(1);
+			if (event.key === 'ArrowLeft') step(-1);
+		});
+
+		// Tag filter (only on the Work page)
+		const chips = Array.from(document.querySelectorAll('[data-filter]'));
+		const emptyNote = document.querySelector('[data-filter-empty]');
+
+		function applyFilter(tag) {
+			let shown = 0;
+			tiles.forEach((tile) => {
+				const slugs = (tile.dataset.tagSlugs || '').split(' ');
+				const match = !tag
+					? true
+					: tag.startsWith('kind:')
+						? tile.dataset.kind === tag.slice(5)
+						: slugs.includes(tag);
+				const li = tile.closest('li');
+				if (li) li.hidden = !match;
+				if (match) shown += 1;
+			});
+			chips.forEach((chip) => {
+				chip.setAttribute('aria-pressed', String((chip.dataset.filter || '') === (tag || '')));
+			});
+			if (emptyNote) emptyNote.hidden = shown > 0;
+		}
+
+		if (chips.length) {
+			const start = new URL(location.href).searchParams.get('tag') || '';
+			const known = chips.some((chip) => chip.dataset.filter === start);
+			applyFilter(known ? start : '');
+			chips.forEach((chip) =>
+				chip.addEventListener('click', () => {
+					const tag = chip.dataset.filter || '';
+					applyFilter(tag);
+					const url = new URL(location.href);
+					if (tag) url.searchParams.set('tag', tag);
+					else url.searchParams.delete('tag');
+					history.replaceState(null, '', url);
+				}),
+			);
+		}
+	}
+</script>
