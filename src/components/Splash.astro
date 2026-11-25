@@ -1,0 +1,83 @@
+---
+// Short intro shown once per visit: stripes sweep across, the name pops in, then the screen lifts away.
+const word = 'hobley';
+---
+
+<script is:inline>
+	// Skip the intro if it already played in this browser tab.
+	try {
+		if (sessionStorage.getItem('hobley-intro')) document.documentElement.classList.add('seen');
+		else sessionStorage.setItem('hobley-intro', '1');
+	} catch (e) {}
+</script>
+
+<div class="splash" aria-hidden="true">
+	<div class="splash-word">
+		{[...word].map((c, n) => <span class="sp-ch" style={`--n:${n}`}>{c}</span>)}
+	</div>
+	<div class="splash-bars"><span></span><span></span><span></span></div>
+</div>
+
+<style>
+	.splash {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: grid;
+		place-content: center;
+		justify-items: center;
+		gap: 1.4rem;
+		background: var(--wall);
+		animation: lift 0.65s cubic-bezier(0.7, 0, 0.84, 0) 1.95s forwards;
+	}
+	.splash-word {
+		font-family: var(--display);
+		font-size: clamp(4.5rem, 22vw, 11rem);
+		line-height: 1;
+		color: var(--accent);
+		text-shadow: 4px 4px 0 var(--stripe-3), 8px 8px 0 rgba(0, 0, 0, 0.35);
+	}
+	.sp-ch {
+		display: inline-block;
+		animation: letter 0.65s cubic-bezier(0.2, 0.9, 0.3, 1.5) both;
+		animation-delay: calc(0.5s + var(--n) * 0.075s);
+	}
+	.splash-bars {
+		display: grid;
+		gap: 0.5rem;
+		width: min(80vw, 38rem);
+	}
+	.splash-bars span {
+		display: block;
+		height: 1rem;
+		border-radius: 999px;
+		transform-origin: left;
+		animation: sweep 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+	}
+	.splash-bars span:nth-child(1) { background: var(--stripe-1); animation-delay: 0.1s; }
+	.splash-bars span:nth-child(2) { background: var(--stripe-2); animation-delay: 0.25s; }
+	.splash-bars span:nth-child(3) { background: var(--stripe-3); animation-delay: 0.4s; }
+
+	@keyframes sweep {
+		from { transform: scaleX(0); }
+	}
+	@keyframes letter {
+		from { opacity: 0; transform: translateY(0.7em) rotate(-10deg) scale(0.5); }
+	}
+	@keyframes lift {
+		to { transform: translateY(-100%); visibility: hidden; }
+	}
+
+	/* Page animations wait for the intro, unless it was already seen. */
+	:global(html:not(.seen)) {
+		--intro: 2.1s;
+	}
+	:global(html.seen) .splash {
+		display: none;
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.splash {
+			display: none;
+		}
+	}
+</style>

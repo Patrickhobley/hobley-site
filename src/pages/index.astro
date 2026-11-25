@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import SocialIcon from '../components/SocialIcon.astro';
+import SplitText from '../components/SplitText.astro';
 import { getCollection } from 'astro:content';
 import profile from '../content/profile.json';
 
@@ -30,7 +31,7 @@ const isHome = (url: string) => /^https?:\/\/(www\.)?hobley\.me(\/|$)/.test(url)
 const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?hobley\.me/, '') || '/' : url);
 ---
 
-<Base>
+<Base splash>
 	<div class="links-page">
 		<header class="profile">
 			{
@@ -40,7 +41,7 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 					</div>
 				)
 			}
-			<h1>{profile.name}</h1>
+			<h1><SplitText text={profile.name} /></h1>
 			{profile.subtitle && <p class="subtitle">{profile.subtitle}</p>}
 			{profile.intro && <p class="intro">{profile.intro}</p>}
 			<div class="stripes" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -50,7 +51,7 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 			sections.length > 0 ? (
 				sections.map((section) => (
 					<section class="group" aria-labelledby={`g-${section.key}`}>
-						<h2 class="group-title" id={`g-${section.key}`}>
+						<h2 class="group-title" id={`g-${section.key}`} style={`--i:${section.items[0].i}`}>
 							{section.title}
 						</h2>
 						<ul class="link-list">
@@ -83,7 +84,7 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 		{
 			socials.length > 0 && (
 				<section class="group" aria-labelledby="g-follow">
-					<h2 class="group-title" id="g-follow">
+					<h2 class="group-title" id="g-follow" style={`--i:${socialStart}`}>
 						Follow
 					</h2>
 					<ul class="social-row">

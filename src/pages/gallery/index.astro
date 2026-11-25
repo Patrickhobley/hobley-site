@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import SplitText from '../../components/SplitText.astro';
 import GalleryGrid from '../../components/GalleryGrid.astro';
 import { getGallery } from '../../lib/gallery';
 import '../../styles/gallery.css';
@@ -52,7 +53,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 	</div>
 
 	<section class="g-wrap">
-		<h1 class="g-title">Gallery</h1>
+		<h1 class="g-title"><SplitText text="Gallery" /></h1>
 		<p class="g-lede">Photography and video: property, festivals, events and press. Pick a category above, or tap any print to see it full size.</p>
 		{
 			items.length > 0 ? (

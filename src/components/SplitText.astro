@@ -1,0 +1,11 @@
+---
+// Renders text letter by letter so each letter can animate in. Screen readers get the plain text.
+interface Props {
+	text: string;
+}
+const { text } = Astro.props;
+---
+
+<span class="split" aria-label={text}>
+	{[...text].map((c, n) => <span class="ch" aria-hidden="true" style={`--n:${n}`}>{c === ' ' ? ' ' : c}</span>)}
+</span>

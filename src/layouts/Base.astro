@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Scene from '../components/Scene.astro';
 import Header from '../components/Header.astro';
+import Splash from '../components/Splash.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 interface Props {
@@ -11,9 +12,11 @@ interface Props {
 	image?: string;
 	/** Turn off the 3D backdrop (used by the gallery so photos sit on a calm wall). */
 	scene?: boolean;
+	/** Play the short intro screen (home page only). */
+	splash?: boolean;
 }
 
-const { title, description = SITE_DESCRIPTION, image, scene = true } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image, scene = true, splash = false } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 ---
 
@@ -23,6 +26,7 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 		<BaseHead title={fullTitle} description={description} image={image} />
 	</head>
 	<body>
+		{splash && <Splash />}
 		{scene && <Scene />}
 		<a class="skip" href="#content">Skip to content</a>
 		<Header>
