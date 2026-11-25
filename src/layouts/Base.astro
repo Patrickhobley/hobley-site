@@ -2,7 +2,8 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import StylePicker from '../components/StylePicker.astro';
+import { SITE_TITLE, SITE_DESCRIPTION, PREVIEW_STYLES } from '../consts';
 
 interface Props {
 	title?: string;
@@ -18,6 +19,17 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 <html lang="en-GB">
 	<head>
 		<BaseHead title={fullTitle} description={description} image={image} />
+		{
+			PREVIEW_STYLES && (
+				<script is:inline>
+					try {
+						var d = document.documentElement;
+						d.dataset.theme = localStorage.getItem('hobley-theme') || 'studio';
+						d.dataset.layout = localStorage.getItem('hobley-layout') || 'masonry';
+					} catch (e) {}
+				</script>
+			)
+		}
 	</head>
 	<body>
 		<a class="skip" href="#content">Skip to content</a>
@@ -26,5 +38,6 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 			<slot />
 		</main>
 		<Footer />
+		{PREVIEW_STYLES && <StylePicker />}
 	</body>
 </html>

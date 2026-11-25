@@ -1,0 +1,65 @@
+---
+const themes = [
+	{ id: 'studio', label: 'Studio' },
+	{ id: 'darkroom', label: 'Darkroom' },
+	{ id: 'chalk', label: 'Chalk and Sea' },
+];
+const layouts = [
+	{ id: 'masonry', label: 'Masonry' },
+	{ id: 'grid', label: 'Even grid' },
+	{ id: 'big', label: 'Large' },
+];
+---
+
+<details class="picker">
+	<summary>Try styles</summary>
+	<div class="picker-panel">
+		<fieldset>
+			<legend>Look</legend>
+			{themes.map((t) => <button type="button" data-set-theme={t.id} aria-pressed="false">{t.label}</button>)}
+		</fieldset>
+		<fieldset>
+			<legend>Gallery layout</legend>
+			{layouts.map((l) => <button type="button" data-set-layout={l.id} aria-pressed="false">{l.label}</button>)}
+		</fieldset>
+	</div>
+</details>
+
+<script>
+	const root = document.documentElement;
+	const read = (key, fallback) => {
+		try {
+			return localStorage.getItem(key) || fallback;
+		} catch {
+			return fallback;
+		}
+	};
+	const write = (key, value) => {
+		try {
+			localStorage.setItem(key, value);
+		} catch {}
+	};
+	function paint() {
+		const theme = root.dataset.theme || 'studio';
+		const layout = root.dataset.layout || 'masonry';
+		document.querySelectorAll('[data-set-theme]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setTheme === theme)));
+		document.querySelectorAll('[data-set-layout]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.setLayout === layout)));
+	}
+	document.querySelectorAll('[data-set-theme]').forEach((b) =>
+		b.addEventListener('click', () => {
+			root.dataset.theme = b.dataset.setTheme;
+			write('hobley-theme', b.dataset.setTheme);
+			paint();
+		}),
+	);
+	document.querySelectorAll('[data-set-layout]').forEach((b) =>
+		b.addEventListener('click', () => {
+			root.dataset.layout = b.dataset.setLayout;
+			write('hobley-layout', b.dataset.setLayout);
+			paint();
+		}),
+	);
+	root.dataset.theme = read('hobley-theme', 'studio');
+	root.dataset.layout = read('hobley-layout', 'masonry');
+	paint();
+</script>

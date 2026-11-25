@@ -6,6 +6,15 @@
 	--accent: #0b5d66;
 	--accent-ink: #ffffff;
 	--signal: #f0b23c;
+	--hover: #dfe3e6;
+	--tile: #d9dee1;
+	--hero-size: clamp(3.6rem, 15.5vw, 12.5rem);
+	--hero-weight: 800;
+	--hero-stretch: 75%;
+	--hero-track: -0.02em;
+	--hero-leading: 0.84;
+	--title-weight: 800;
+	--title-stretch: 75%;
 	--display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
 	--text: "Source Serif 4", Georgia, "Times New Roman", serif;
 	--gutter: clamp(1rem, 4vw, 2.5rem);
@@ -155,11 +164,11 @@ p {
 	padding: clamp(2rem, 7vw, 5rem) var(--gutter) 1rem;
 }
 .hero h1 {
-	font-size: clamp(3.6rem, 15.5vw, 12.5rem);
-	font-weight: 800;
-	font-stretch: 75%;
-	line-height: 0.84;
-	letter-spacing: -0.02em;
+	font-size: var(--hero-size);
+	font-weight: var(--hero-weight);
+	font-stretch: var(--hero-stretch);
+	line-height: var(--hero-leading);
+	letter-spacing: var(--hero-track);
 	margin: 0 0 0.3em -0.04em;
 }
 .lede {
@@ -188,8 +197,8 @@ p {
 }
 .page-title {
 	font-size: clamp(2.5rem, 7vw, 4.5rem);
-	font-weight: 800;
-	font-stretch: 75%;
+	font-weight: var(--title-weight);
+	font-stretch: var(--title-stretch);
 	letter-spacing: -0.015em;
 }
 .empty {
@@ -227,7 +236,7 @@ p {
 	cursor: pointer;
 }
 .chip:hover {
-	background: #dfe3e6;
+	background: var(--hover);
 }
 .chip[aria-pressed="true"] {
 	background: var(--accent);
@@ -256,7 +265,7 @@ p {
 	width: 100%;
 	padding: 0;
 	border: 0;
-	background: #d9dee1;
+	background: var(--tile);
 	color: inherit;
 	cursor: zoom-in;
 	text-align: left;
@@ -424,4 +433,161 @@ p {
 		transition: none !important;
 		scroll-behavior: auto !important;
 	}
+}
+
+/* ---- Style options ---- */
+
+/* Darkroom: a dark wall so photographs glow */
+html[data-theme="darkroom"] {
+	--wall: #13171b;
+	--ink: #ecebe7;
+	--mute: #98a1a8;
+	--line: #2c343b;
+	--accent: #e3a75a;
+	--accent-ink: #14100a;
+	--hover: #222a31;
+	--tile: #1f262c;
+	color-scheme: dark;
+}
+html[data-theme="darkroom"] .skip {
+	background: var(--ink);
+	color: var(--wall);
+}
+
+/* Chalk and Sea: white cliffs, deep navy, a serif voice */
+html[data-theme="chalk"] {
+	--wall: #f8fafb;
+	--ink: #0d2238;
+	--mute: #50667a;
+	--line: #d3dde5;
+	--accent: #1f5fbf;
+	--hover: #e9eff4;
+	--tile: #e4ebf0;
+	--display: "Newsreader", Georgia, serif;
+	--text: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+	--hero-size: clamp(3.2rem, 12vw, 10rem);
+	--hero-weight: 500;
+	--hero-stretch: 100%;
+	--hero-track: -0.035em;
+	--hero-leading: 0.92;
+	--title-weight: 500;
+	--title-stretch: 100%;
+}
+html[data-theme="chalk"] body {
+	font-size: 1.0625rem;
+	font-weight: 380;
+}
+html[data-theme="chalk"] h2,
+html[data-theme="chalk"] h3 {
+	font-weight: 600;
+}
+html[data-theme="chalk"] .wordmark,
+html[data-theme="chalk"] .site-header nav a,
+html[data-theme="chalk"] .site-footer,
+html[data-theme="chalk"] .chip,
+html[data-theme="chalk"] .tile-title,
+html[data-theme="chalk"] .viewer-info p,
+html[data-theme="chalk"] .viewer-controls button,
+html[data-theme="chalk"] .timeline .when {
+	font-family: var(--text);
+}
+html[data-theme="chalk"] .wordmark {
+	font-family: var(--display);
+	font-weight: 600;
+	font-size: 1.3rem;
+}
+
+/* Gallery layouts */
+html[data-layout="grid"] .grid {
+	display: grid;
+	columns: auto;
+	grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+	gap: 1rem;
+}
+html[data-layout="grid"] .grid > li {
+	margin: 0;
+}
+html[data-layout="grid"] .tile {
+	aspect-ratio: 4 / 3;
+}
+html[data-layout="grid"] .tile img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+html[data-layout="big"] .grid {
+	columns: 2 26rem;
+	column-gap: 1.5rem;
+}
+html[data-layout="big"] .grid > li {
+	margin-bottom: 1.5rem;
+}
+
+/* Style picker (preview only) */
+.picker {
+	position: fixed;
+	right: 1rem;
+	bottom: 1rem;
+	z-index: 20;
+	max-width: calc(100vw - 2rem);
+	font-family: "Bricolage Grotesque", Arial, sans-serif;
+	font-size: 0.9rem;
+	line-height: 1.3;
+	color: #fff;
+}
+.picker summary {
+	list-style: none;
+	cursor: pointer;
+	padding: 0.7rem 1rem;
+	border-radius: 999px;
+	background: #0d2238;
+	color: #fff;
+	font-weight: 600;
+	box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+	width: max-content;
+	margin-left: auto;
+}
+.picker summary::-webkit-details-marker {
+	display: none;
+}
+.picker-panel {
+	margin-bottom: 0.6rem;
+	padding: 1rem;
+	border-radius: 14px;
+	background: #0d2238;
+	box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+	display: grid;
+	gap: 0.9rem;
+}
+.picker fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+.picker legend {
+	padding: 0;
+	margin-bottom: 0.4rem;
+	color: #9fb4c8;
+	font-weight: 500;
+}
+.picker button {
+	font: 500 0.9rem/1 inherit;
+	font-family: inherit;
+	padding: 0.55rem 0.8rem;
+	border-radius: 999px;
+	border: 1px solid #5d7893;
+	background: transparent;
+	color: #fff;
+	cursor: pointer;
+}
+.picker button[aria-pressed="true"] {
+	background: #fff;
+	color: #0d2238;
+	border-color: #fff;
+}
+.picker :focus-visible {
+	outline-color: #f0b23c;
 }

@@ -1,0 +1,13 @@
+{
+  "title": "Sample: Video",
+  "kind": "video",
+  "image": "/gallery/sample-video-cover.jpg",
+  "video_file": "/gallery/sample-video.mp4",
+  "caption": "An uploaded video file. Placeholder, replace with your own.",
+  "tags": [
+    "video",
+    "events"
+  ],
+  "date": "2026-11-12",
+  "featured": false
+}
