@@ -2,5 +2,6 @@
   "title": "Alamy",
   "url": "https://www.alamy.com/portfolio/hobley",
   "order": 30,
-  "sponsored": false
+  "sponsored": false,
+  "group": "work"
 }

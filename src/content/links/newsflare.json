@@ -2,5 +2,6 @@
   "title": "Newsflare",
   "url": "https://www.newsflare.com/profile/hobley",
   "order": 20,
-  "sponsored": false
+  "sponsored": false,
+  "group": "work"
 }

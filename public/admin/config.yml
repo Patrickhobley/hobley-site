@@ -47,6 +47,21 @@ collections:
         widget: string
         pattern: ["^(https?://|mailto:).+", "Start with https:// (or mailto: for an email address)"]
         hint: The full address the button opens, for example https://www.alamy.com/portfolio/hobley or mailto:you@example.com
+      - label: Section
+        name: group
+        widget: select
+        default: work
+        options:
+          - { label: Work, value: work }
+          - { label: Support, value: support }
+          - { label: Get in touch, value: contact }
+        hint: Which heading the button sits under on the home page.
+      - label: Highlight this button
+        name: featured
+        widget: boolean
+        default: false
+        required: false
+        hint: Shows the button in mustard so it stands out. Use it for one button.
       - label: Position
         name: order
         widget: number

@@ -115,6 +115,22 @@ p {
 .site-footer p {
 	margin: 0;
 }
+.footer-links {
+	display: flex;
+	justify-content: center;
+	gap: 0.4rem 1.4rem;
+	flex-wrap: wrap;
+	margin-bottom: 0.8rem;
+}
+.footer-links a {
+	color: var(--paper);
+	font-weight: 700;
+	text-decoration: none;
+	border-bottom: 2px solid var(--accent);
+}
+.footer-links a:hover {
+	color: var(--accent);
+}
 
 /* Top bar */
 .site-bar {
@@ -149,7 +165,7 @@ p {
 
 /* Link page */
 .links-page {
-	width: min(100% - 2 * var(--gutter), 30rem);
+	width: min(100% - 2 * var(--gutter), 32rem);
 	margin: 0 auto;
 	padding: clamp(2rem, 8vw, 4.5rem) 0 1rem;
 }
@@ -223,12 +239,38 @@ p {
 .stripes span:nth-child(3) {
 	background: var(--stripe-3);
 }
+
 .link-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	display: grid;
-	gap: 1rem;
+	gap: 0.9rem;
+}
+.group {
+	margin-top: 2.25rem;
+}
+.group-title {
+	display: flex;
+	align-items: center;
+	gap: 0.9rem;
+	margin: 0 0 1rem;
+	font-size: 1.45rem;
+	color: var(--paper);
+}
+.group-title::after {
+	content: "";
+	flex: 1;
+	height: 0.5rem;
+	border-radius: 999px;
+	background: linear-gradient(
+		to bottom,
+		var(--stripe-1) 0 33%,
+		transparent 33% 38%,
+		var(--stripe-2) 38% 66%,
+		transparent 66% 71%,
+		var(--stripe-3) 71%
+	);
 }
 .link-list li,
 .social-row li {
@@ -259,6 +301,14 @@ p {
 	opacity: 0;
 	transition: opacity 0.2s;
 }
+.link-button.featured {
+	background: var(--accent);
+	padding-block: 1.35rem;
+	font-size: 1.3rem;
+}
+.link-button.featured:hover {
+	background: var(--paper);
+}
 .link-button:hover {
 	background: var(--accent);
 	color: var(--accent-ink);
@@ -278,8 +328,8 @@ p {
 .social-row {
 	list-style: none;
 	max-width: 25rem;
-	margin: 3rem auto 0;
-	padding: 0;
+	margin: 0 auto;
+	padding: 0.4rem 0 0;
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;

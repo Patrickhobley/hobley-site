@@ -2,5 +2,6 @@
   "title": "Donate",
   "url": "https://paypal.com/paypalme/hobley",
   "order": 40,
-  "sponsored": false
+  "sponsored": false,
+  "group": "support"
 }

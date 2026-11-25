@@ -14,6 +14,11 @@ const links = defineCollection({
 		title: z.string(),
 		url: address,
 		order: z.number().default(100),
+		group: z.enum(["work", "support", "contact"]).default("work"),
+		featured: z
+			.boolean()
+			.nullish()
+			.transform((value) => value ?? false),
 		sponsored: z
 			.boolean()
 			.nullish()

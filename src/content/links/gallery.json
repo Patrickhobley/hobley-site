@@ -1,5 +1,7 @@
 {
   "title": "Gallery",
   "url": "https://hobley.me/gallery",
-  "order": 5
+  "order": 5,
+  "group": "work",
+  "featured": true
 }

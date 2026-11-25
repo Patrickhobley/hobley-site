@@ -10,6 +10,20 @@ const byOrder = (a: any, b: any) =>
 const links = (await getCollection('links')).sort(byOrder);
 const socials = (await getCollection('socials')).sort(byOrder);
 
+const sectionDefs = [
+	{ key: 'work', title: 'Work' },
+	{ key: 'support', title: 'Support' },
+	{ key: 'contact', title: 'Get in touch' },
+];
+let n = 0;
+const sections = sectionDefs
+	.map((def) => ({
+		...def,
+		items: links.filter((l) => l.data.group === def.key).map((link) => ({ link, i: n++ })),
+	}))
+	.filter((section) => section.items.length > 0);
+const socialStart = n;
+
 const isEmail = (url: string) => url.startsWith('mailto:');
 // Links to this site open in the same tab and stay on whichever address you are using.
 const isHome = (url: string) => /^https?:\/\/(www\.)?hobley\.me(\/|$)/.test(url);
@@ -33,27 +47,34 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 		</header>
 
 		{
-			links.length > 0 ? (
-				<ul class="link-list">
-					{links.map((link, i) => (
-						<li style={`--i:${i}`}>
-							<a
-								class="link-button"
-								href={href(link.data.url)}
-								target={isEmail(link.data.url) || isHome(link.data.url) ? undefined : '_blank'}
-								rel={
-									isEmail(link.data.url) || isHome(link.data.url)
-										? undefined
-										: link.data.sponsored
-											? 'noopener noreferrer sponsored'
-											: 'noopener noreferrer'
-								}
-							>
-								{link.data.title}
-							</a>
-						</li>
-					))}
-				</ul>
+			sections.length > 0 ? (
+				sections.map((section) => (
+					<section class="group" aria-labelledby={`g-${section.key}`}>
+						<h2 class="group-title" id={`g-${section.key}`}>
+							{section.title}
+						</h2>
+						<ul class="link-list">
+							{section.items.map(({ link, i }) => (
+								<li style={`--i:${i}`}>
+									<a
+										class:list={['link-button', { featured: link.data.featured }]}
+										href={href(link.data.url)}
+										target={isEmail(link.data.url) || isHome(link.data.url) ? undefined : '_blank'}
+										rel={
+											isEmail(link.data.url) || isHome(link.data.url)
+												? undefined
+												: link.data.sponsored
+													? 'noopener noreferrer sponsored'
+													: 'noopener noreferrer'
+										}
+									>
+										{link.data.title}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))
 			) : (
 				<p class="empty">No links yet. Add some in the admin area.</p>
 			)
@@ -61,9 +82,13 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 
 		{
 			socials.length > 0 && (
-				<ul class="social-row" aria-label="Social media">
-					{socials.map((social, i) => (
-						<li style={`--i:${i}`}>
+				<section class="group" aria-labelledby="g-follow">
+					<h2 class="group-title" id="g-follow">
+						Follow
+					</h2>
+					<ul class="social-row">
+						{socials.map((social, i) => (
+							<li style={`--i:${socialStart + i}`}>
 							<a
 								class="social-icon"
 								href={social.data.url}
@@ -74,9 +99,10 @@ const href = (url: string) => (isHome(url) ? url.replace(/^https?:\/\/(www\.)?ho
 							>
 								<SocialIcon name={social.data.platform} />
 							</a>
-						</li>
-					))}
-				</ul>
+							</li>
+						))}
+					</ul>
+				</section>
 			)
 		}
 	</div>
