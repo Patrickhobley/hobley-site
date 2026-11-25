@@ -18,7 +18,9 @@ const isEmail = (url: string) => url.startsWith('mailto:');
 		<header class="profile">
 			{
 				profile.avatar && (
-					<img class="avatar" src={profile.avatar} width="112" height="112" alt="" />
+					<div class="avatar-wrap">
+						<img class="avatar" src={profile.avatar} width="112" height="112" alt="" />
+					</div>
 				)
 			}
 			<h1>{profile.name}</h1>
@@ -30,8 +32,8 @@ const isEmail = (url: string) => url.startsWith('mailto:');
 		{
 			links.length > 0 ? (
 				<ul class="link-list">
-					{links.map((link) => (
-						<li>
+					{links.map((link, i) => (
+						<li style={`--i:${i}`}>
 							<a
 								class="link-button"
 								href={link.data.url}
@@ -57,8 +59,8 @@ const isEmail = (url: string) => url.startsWith('mailto:');
 		{
 			socials.length > 0 && (
 				<ul class="social-row" aria-label="Social media">
-					{socials.map((social) => (
-						<li>
+					{socials.map((social, i) => (
+						<li style={`--i:${i}`}>
 							<a
 								class="social-icon"
 								href={social.data.url}
@@ -76,3 +78,25 @@ const isEmail = (url: string) => url.startsWith('mailto:');
 		}
 	</div>
 </Base>
+
+<script>
+	// Buttons and icons tilt toward the pointer for a little depth.
+	const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const fine = window.matchMedia('(hover: hover)').matches;
+	if (!calm && fine) {
+		document.querySelectorAll<HTMLElement>('.link-button, .social-icon').forEach((el) => {
+			el.addEventListener('pointermove', (e) => {
+				const r = el.getBoundingClientRect();
+				const x = (e.clientX - r.left) / r.width - 0.5;
+				const y = (e.clientY - r.top) / r.height - 0.5;
+				el.style.setProperty('--rx', `${(-y * 10).toFixed(1)}deg`);
+				el.style.setProperty('--ry', `${(x * 12).toFixed(1)}deg`);
+				el.style.setProperty('--sx', `${((x + 0.5) * 100).toFixed(0)}%`);
+			});
+			el.addEventListener('pointerleave', () => {
+				el.style.setProperty('--rx', '0deg');
+				el.style.setProperty('--ry', '0deg');
+			});
+		});
+	}
+</script>

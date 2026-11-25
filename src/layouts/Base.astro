@@ -1,6 +1,7 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import Scene from '../components/Scene.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
 
 interface Props {
@@ -19,6 +20,7 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 		<BaseHead title={fullTitle} description={description} image={image} />
 	</head>
 	<body>
+		<Scene />
 		<a class="skip" href="#content">Skip to content</a>
 		<main id="content">
 			<slot />

@@ -25,6 +25,7 @@
 
 html {
 	background: var(--wall);
+	scroll-behavior: smooth;
 	color: var(--ink);
 	color-scheme: dark;
 	-webkit-text-size-adjust: 100%;
@@ -32,6 +33,7 @@ html {
 
 body {
 	margin: 0;
+	position: relative;
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
@@ -126,20 +128,40 @@ p {
 	text-align: center;
 	margin-bottom: 2rem;
 }
+.avatar-wrap {
+	position: relative;
+	width: 8.5rem;
+	height: 8.5rem;
+	display: grid;
+	place-items: center;
+	margin-bottom: 1rem;
+	animation: float 6s ease-in-out infinite;
+}
+/* spinning stripe ring */
+.avatar-wrap::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: conic-gradient(var(--stripe-1), var(--stripe-2), var(--stripe-3), var(--stripe-2), var(--stripe-1));
+	animation: spin 7s linear infinite;
+	box-shadow: 6px 8px 0 rgba(0, 0, 0, 0.3);
+}
 .avatar {
-	width: 7rem;
-	height: 7rem;
+	position: relative;
+	width: 7.4rem;
+	height: 7.4rem;
 	border-radius: 50%;
 	object-fit: cover;
-	border: 4px solid var(--accent);
+	border: 5px solid var(--wall);
 	background: var(--line);
-	margin-bottom: 1rem;
 }
 .profile h1 {
-	font-size: clamp(2.6rem, 11vw, 3.6rem);
+	font-size: clamp(3rem, 13vw, 4.4rem);
 	line-height: 1;
 	color: var(--accent);
 	margin: 0 0 0.25rem;
+	text-shadow: 3px 3px 0 var(--stripe-3), 6px 6px 0 rgba(0, 0, 0, 0.35);
 }
 .subtitle {
 	margin: 0 0 0.75rem;
@@ -177,21 +199,42 @@ p {
 	display: grid;
 	gap: 1rem;
 }
+.link-list li,
+.social-row li {
+	perspective: 700px;
+}
 .link-button {
+	position: relative;
+	overflow: hidden;
 	display: block;
-	padding: 1rem 1.25rem;
-	border-radius: 6px;
+	padding: 1.1rem 1.25rem;
+	border-radius: 8px;
 	background: var(--paper);
 	color: var(--ink-on-paper);
 	box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.32);
 	font-weight: 800;
-	font-size: 1.1rem;
+	font-size: 1.15rem;
 	text-align: center;
 	text-decoration: none;
+	transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+	transition: transform 0.15s ease-out, background 0.2s, box-shadow 0.2s;
+}
+/* light sweep that follows the pointer */
+.link-button::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle at var(--sx, 50%) 50%, rgba(255, 255, 255, 0.75), transparent 55%);
+	opacity: 0;
+	transition: opacity 0.2s;
 }
 .link-button:hover {
 	background: var(--accent);
 	color: var(--accent-ink);
+	box-shadow: 9px 9px 0 rgba(0, 0, 0, 0.32);
+}
+.link-button:hover::after {
+	opacity: 0.6;
 }
 .link-button:active {
 	box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.32);
@@ -224,8 +267,10 @@ p {
 		0 0 0 6px var(--accent),
 		7px 7px 0 3px rgba(0, 0, 0, 0.3);
 	transition:
-		transform 0.12s,
-		box-shadow 0.12s;
+		transform 0.15s ease-out,
+		box-shadow 0.12s,
+		background 0.2s;
+	transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 }
 .social-icon svg {
 	width: 2.2rem;
@@ -234,7 +279,7 @@ p {
 .social-icon:hover {
 	background: var(--accent);
 	color: var(--accent-ink);
-	transform: translate(-2px, -2px);
+	transform: translate(-2px, -4px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 	box-shadow:
 		0 0 0 3px var(--wall),
 		0 0 0 6px var(--paper),
@@ -251,6 +296,62 @@ p {
 	color: var(--mute);
 	text-align: center;
 	padding: 2rem 0;
+}
+
+/* One entrance: everything rises in, top to bottom */
+.profile > *,
+.link-list li,
+.social-row li {
+	animation: rise 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.avatar-wrap {
+	animation: pop 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.3) both, float 6s ease-in-out 0.8s infinite;
+}
+.profile > :nth-child(2) { animation-delay: 0.15s; }
+.profile > :nth-child(3) { animation-delay: 0.25s; }
+.profile > :nth-child(4) { animation-delay: 0.35s; }
+.profile > :nth-child(5) { animation-delay: 0.45s; }
+.link-list li { animation-delay: calc(0.55s + var(--i, 0) * 0.09s); }
+.social-row li {
+	animation-name: pop;
+	animation-delay: calc(1.05s + var(--i, 0) * 0.07s);
+}
+.stripes span {
+	transform-origin: left;
+	animation: draw 0.7s ease-out 0.5s both;
+}
+.stripes span:nth-child(2) { animation-delay: 0.62s; }
+.stripes span:nth-child(3) { animation-delay: 0.74s; }
+
+@keyframes rise {
+	from { opacity: 0; transform: translateY(1.6rem) scale(0.96); }
+}
+@keyframes pop {
+	from { opacity: 0; transform: scale(0.5) rotate(-12deg); }
+}
+@keyframes draw {
+	from { transform: scaleX(0); }
+}
+@keyframes float {
+	50% { transform: translateY(-0.45rem); }
+}
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.profile > *,
+	.link-list li,
+	.social-row li,
+	.avatar-wrap,
+	.avatar-wrap::before,
+	.stripes span {
+		animation: none !important;
+	}
+	.link-button,
+	.social-icon {
+		transform: none !important;
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {

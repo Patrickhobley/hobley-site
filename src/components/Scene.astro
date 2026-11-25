@@ -1,0 +1,235 @@
+---
+// A 3D photo-lab backdrop made from CSS only: striped sun, gridded floor rushing
+// toward you, and photo prints floating at different depths. It sits behind the page.
+const prints = [
+	{ x: '-34vw', y: '-14vh', z: '-120px', r: '-14deg', ry: '24deg', s: 1, d: '0s', c: 1 },
+	{ x: '30vw', y: '-24vh', z: '-260px', r: '10deg', ry: '-28deg', s: 1.2, d: '-2s', c: 2 },
+	{ x: '-26vw', y: '16vh', z: '60px', r: '8deg', ry: '30deg', s: 0.8, d: '-4s', c: 3 },
+	{ x: '34vw', y: '10vh', z: '-40px', r: '-9deg', ry: '-24deg', s: 0.9, d: '-1s', c: 1 },
+	{ x: '-8vw', y: '-34vh', z: '-380px', r: '5deg', ry: '14deg', s: 1.1, d: '-3s', c: 2 },
+	{ x: '10vw', y: '30vh', z: '-200px', r: '-6deg', ry: '-18deg', s: 0.7, d: '-5s', c: 3 },
+];
+---
+
+<div class="scene" aria-hidden="true">
+	<div class="stage">
+		<div class="sun"></div>
+		<div class="floor"><div class="grid"></div></div>
+		<div class="prints">
+			{
+				prints.map((p) => (
+					<div
+						class="print"
+						style={`--x:${p.x};--y:${p.y};--z:${p.z};--r:${p.r};--ry:${p.ry};--s:${p.s};--d:${p.d}`}
+					>
+						<div class="print-inner">
+							<div class={`photo tone-${p.c}`} />
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+	<div class="vignette"></div>
+</div>
+
+<style>
+	.scene {
+		position: fixed;
+		inset: 0;
+		overflow: hidden;
+		z-index: -1;
+		pointer-events: none;
+		perspective: 900px;
+		perspective-origin: 50% 40%;
+		--mx: 0;
+		--my: 0;
+	}
+	.stage {
+		position: absolute;
+		inset: 0;
+		transform-style: preserve-3d;
+		transform: rotateX(calc(var(--my) * -3deg)) rotateY(calc(var(--mx) * 4deg));
+		transition: transform 0.4s ease-out;
+	}
+
+	/* Striped retro sun sitting on the horizon */
+	.sun {
+		position: absolute;
+		left: 50%;
+		top: 58vh;
+		width: min(70vmin, 34rem);
+		aspect-ratio: 1;
+		translate: -50% -100%;
+		border-radius: 50%;
+		background: linear-gradient(to bottom, #f2b632 10%, #e8742c 55%, #c8412b 90%);
+		/* horizontal slits that grow toward the bottom, like a 70s sunset */
+		--slits: linear-gradient(
+			to bottom,
+			#000 0 52%,
+			transparent 52% 56%,
+			#000 56% 63%,
+			transparent 63% 69%,
+			#000 69% 76%,
+			transparent 76% 83%,
+			#000 83% 90%,
+			transparent 90% 100%
+		);
+		-webkit-mask-image: var(--slits);
+		mask-image: var(--slits);
+		opacity: 0.9;
+		filter: drop-shadow(0 0 3rem rgba(242, 182, 50, 0.35));
+		animation: sun-breathe 9s ease-in-out infinite;
+	}
+
+	/* Floor: a perspective grid that slides toward the viewer */
+	.floor {
+		position: absolute;
+		left: -50%;
+		right: -50%;
+		top: 58vh;
+		height: 90vh;
+		transform-origin: 50% 0;
+		transform: rotateX(72deg);
+		overflow: hidden;
+		-webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+		mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+	}
+	.grid {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: -80px;
+		bottom: 0;
+		background-image:
+			linear-gradient(to right, rgba(242, 182, 50, 0.55) 2px, transparent 2px),
+			linear-gradient(to bottom, rgba(242, 182, 50, 0.55) 2px, transparent 2px);
+		background-size: 80px 80px;
+		animation: grid-run 2.4s linear infinite;
+	}
+	.floor::before {
+		/* soft glow on the horizon line */
+		content: '';
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 14%;
+		background: linear-gradient(to bottom, rgba(242, 182, 50, 0.45), transparent);
+		z-index: 1;
+	}
+
+	/* Floating photo prints */
+	.prints {
+		position: absolute;
+		inset: 0;
+		transform-style: preserve-3d;
+	}
+	.print {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform-style: preserve-3d;
+		transform: translate3d(calc(var(--x) + var(--mx) * var(--z) * -0.06), calc(var(--y) + var(--my) * var(--z) * -0.06), var(--z));
+		transition: transform 0.4s ease-out;
+	}
+	.print-inner {
+		width: 9.5rem;
+		padding: 0.6rem 0.6rem 2.2rem;
+		margin: -6rem 0 0 -4.75rem;
+		background: var(--paper);
+		box-shadow: 8px 10px 0 rgba(0, 0, 0, 0.25);
+		scale: var(--s);
+		transform-style: preserve-3d;
+		animation: drift 11s ease-in-out infinite;
+		animation-delay: var(--d);
+	}
+	.photo {
+		aspect-ratio: 1;
+		background-size: cover;
+	}
+	.tone-1 {
+		background:
+			radial-gradient(circle at 70% 30%, #f2b632 0 14%, transparent 15%),
+			linear-gradient(to bottom, #e8742c 0 55%, #163f3a 55%);
+	}
+	.tone-2 {
+		background:
+			radial-gradient(circle at 30% 65%, #f4efe2 0 12%, transparent 13%),
+			linear-gradient(135deg, #c8412b, #e8742c 60%, #f2b632);
+	}
+	.tone-3 {
+		background:
+			linear-gradient(to bottom, #35655d 0 45%, #f2b632 45% 60%, #163f3a 60%);
+	}
+
+	.vignette {
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(5, 20, 18, 0.65) 100%);
+	}
+
+	@keyframes grid-run {
+		to {
+			transform: translateY(80px);
+		}
+	}
+	@keyframes sun-breathe {
+		50% {
+			transform: translateY(1.2vh) scale(1.03);
+		}
+	}
+	@keyframes drift {
+		0%,
+		100% {
+			transform: translateY(-0.6rem) rotateZ(var(--r)) rotateY(var(--ry));
+		}
+		50% {
+			transform: translateY(0.8rem) rotateZ(calc(var(--r) * -0.5)) rotateY(calc(var(--ry) * -0.7));
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.print:nth-child(n + 4) {
+			display: none;
+		}
+		.print {
+			transform: translate3d(calc(var(--x) * 0.6), var(--y), var(--z));
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.grid,
+		.sun,
+		.print-inner {
+			animation: none;
+		}
+		.print-inner {
+			transform: rotateZ(var(--r)) rotateY(var(--ry));
+		}
+		.stage {
+			transform: none;
+		}
+	}
+</style>
+
+<script>
+	// Gentle parallax: the whole scene leans toward the pointer, or the phone's tilt.
+	const scene = document.querySelector<HTMLElement>('.scene');
+	const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	if (scene && !calm) {
+		const lean = (x: number, y: number) => {
+			scene.style.setProperty('--mx', String(Math.max(-1, Math.min(1, x))));
+			scene.style.setProperty('--my', String(Math.max(-1, Math.min(1, y))));
+		};
+		window.addEventListener(
+			'pointermove',
+			(e) => lean((e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2),
+			{ passive: true },
+		);
+		window.addEventListener(
+			'deviceorientation',
+			(e) => {
+				if (e.gamma != null && e.beta != null) lean(e.gamma / 30, (e.beta - 45) / 30);
+			},
+			{ passive: true },
+		);
+	}
+</script>
