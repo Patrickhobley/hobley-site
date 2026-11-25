@@ -1,6 +1,6 @@
 {
   "title": "Twitch",
   "url": "https://www.twitch.tv/hobley",
-  "order": 7,
-  "sponsored": false
+  "platform": "twitch",
+  "order": 40
 }

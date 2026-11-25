@@ -1,11 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
+import SocialIcon from '../components/SocialIcon.astro';
 import { getCollection } from 'astro:content';
 import profile from '../content/profile.json';
 
-const links = (await getCollection('links')).sort(
-	(a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title),
-);
+const byOrder = (a: any, b: any) =>
+	a.data.order - b.data.order || a.data.title.localeCompare(b.data.title);
+
+const links = (await getCollection('links')).sort(byOrder);
+const socials = (await getCollection('socials')).sort(byOrder);
+
+const isEmail = (url: string) => url.startsWith('mailto:');
 ---
 
 <Base>
@@ -18,6 +23,7 @@ const links = (await getCollection('links')).sort(
 			}
 			<h1>{profile.name}</h1>
 			{profile.subtitle && <p class="subtitle">{profile.subtitle}</p>}
+			{profile.intro && <p class="intro">{profile.intro}</p>}
 			<div class="stripes" aria-hidden="true"><span></span><span></span><span></span></div>
 		</header>
 
@@ -29,8 +35,14 @@ const links = (await getCollection('links')).sort(
 							<a
 								class="link-button"
 								href={link.data.url}
-								target="_blank"
-								rel={link.data.sponsored ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
+								target={isEmail(link.data.url) ? undefined : '_blank'}
+								rel={
+									isEmail(link.data.url)
+										? undefined
+										: link.data.sponsored
+											? 'noopener noreferrer sponsored'
+											: 'noopener noreferrer'
+								}
 							>
 								{link.data.title}
 							</a>
@@ -39,6 +51,27 @@ const links = (await getCollection('links')).sort(
 				</ul>
 			) : (
 				<p class="empty">No links yet. Add some in the admin area.</p>
+			)
+		}
+
+		{
+			socials.length > 0 && (
+				<ul class="social-row" aria-label="Social media">
+					{socials.map((social) => (
+						<li>
+							<a
+								class="social-icon"
+								href={social.data.url}
+								aria-label={social.data.title}
+								title={social.data.title}
+								target={isEmail(social.data.url) ? undefined : '_blank'}
+								rel={isEmail(social.data.url) ? undefined : 'noopener noreferrer'}
+							>
+								<SocialIcon name={social.data.platform} />
+							</a>
+						</li>
+					))}
+				</ul>
 			)
 		}
 	</div>

@@ -1,6 +1,6 @@
 {
   "title": "YouTube",
   "url": "https://www.youtube.com/patrickhobley",
-  "order": 6,
-  "sponsored": false
+  "platform": "youtube",
+  "order": 30
 }

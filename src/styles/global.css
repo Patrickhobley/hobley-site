@@ -142,8 +142,14 @@ p {
 	margin: 0 0 0.25rem;
 }
 .subtitle {
-	margin: 0 0 1.25rem;
+	margin: 0 0 0.75rem;
 	color: var(--mute);
+}
+.intro {
+	max-width: 24rem;
+	margin: 0 0 1.25rem;
+	font-size: 1.15rem;
+	line-height: 1.45;
 }
 .stripes {
 	display: grid;
@@ -194,6 +200,37 @@ p {
 .not-found {
 	color: var(--accent);
 	text-align: center;
+}
+.social-row {
+	list-style: none;
+	margin: 2.5rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 1rem;
+}
+.social-icon {
+	display: grid;
+	place-items: center;
+	width: 3.25rem;
+	height: 3.25rem;
+	border-radius: 50%;
+	background: var(--paper);
+	color: var(--ink-on-paper);
+	box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.32);
+}
+.social-icon svg {
+	width: 1.6rem;
+	height: 1.6rem;
+}
+.social-icon:hover {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+.social-icon:active {
+	box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.32);
+	transform: translate(3px, 3px);
 }
 .empty {
 	color: var(--mute);

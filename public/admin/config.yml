@@ -27,9 +27,9 @@ media_libraries:
 
 collections:
   - name: links
-    label: Links
-    label_singular: link
-    description: The buttons on the home page. Lower numbers appear first.
+    label: Buttons
+    label_singular: button
+    description: The big buttons on the home page. Lower numbers appear first.
     folder: src/content/links
     extension: json
     format: json
@@ -45,8 +45,8 @@ collections:
       - label: Web address
         name: url
         widget: string
-        pattern: ["^https?://.+", "Start with http:// or https://"]
-        hint: The full address the button opens, for example https://www.instagram.com/hobley/
+        pattern: ["^(https?://|mailto:).+", "Start with https:// (or mailto: for an email address)"]
+        hint: The full address the button opens, for example https://www.alamy.com/portfolio/hobley or mailto:you@example.com
       - label: Position
         name: order
         widget: number
@@ -60,6 +60,51 @@ collections:
         default: false
         required: false
         hint: Tick this for paid or affiliate links such as Amazon.
+
+  - name: socials
+    label: Social icons
+    label_singular: social icon
+    description: The round icons at the bottom of the home page. Lower numbers appear first.
+    folder: src/content/socials
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    identifier_field: title
+    summary: "{{order}}. {{title}}"
+    sortable_fields: [order, title]
+    fields:
+      - label: Name
+        name: title
+        widget: string
+        hint: Shown when someone hovers over the icon and read out by screen readers.
+      - label: Platform
+        name: platform
+        widget: select
+        default: website
+        options:
+          - { label: Instagram, value: instagram }
+          - { label: Twitter / X, value: x }
+          - { label: YouTube, value: youtube }
+          - { label: Twitch, value: twitch }
+          - { label: Steam, value: steam }
+          - { label: Spotify, value: spotify }
+          - { label: LinkedIn, value: linkedin }
+          - { label: Email, value: email }
+          - { label: Other website, value: website }
+        hint: Picks which icon is shown.
+      - label: Web address
+        name: url
+        widget: string
+        pattern: ["^(https?://|mailto:).+", "Start with https:// (or mailto: for an email address)"]
+        hint: For example https://www.instagram.com/hobley/
+      - label: Position
+        name: order
+        widget: number
+        value_type: int
+        min: 1
+        default: 70
+        hint: Lower numbers appear first. Use gaps like 10, 20, 30 so you can slot new icons in between.
 
   - name: pages
     label: Profile
@@ -76,6 +121,11 @@ collections:
             name: subtitle
             widget: string
             required: false
+          - label: Intro
+            name: intro
+            widget: text
+            required: false
+            hint: One or two short sentences shown under the name.
           - label: Picture
             name: avatar
             widget: image
