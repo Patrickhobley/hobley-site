@@ -13,5 +13,11 @@
 		"enabled": true
 	},
 	"upload_source_maps": true,
-	"previews": {}
+	"previews": {},
+	"routes": [
+		{
+			"pattern": "gta.hobley.me",
+			"custom_domain": true
+		}
+	]
 }

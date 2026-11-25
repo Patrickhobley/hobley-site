@@ -1,0 +1,252 @@
+---
+// Miami theme music player: plays a song from an official YouTube video, with the video shown in a small window.
+// The song is set in /admin (Music player). Nothing is hosted here; the audio streams from YouTube.
+import music from '../content/music.json';
+
+const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
+---
+
+{
+	id && (
+		<aside class="player" aria-label="Music player" data-player data-video={id}>
+			<div class="pl-head">
+				<div class="eq" aria-hidden="true">
+					<i />
+					<i />
+					<i />
+					<i />
+				</div>
+				<div class="pl-meta">
+					<p class="pl-now">Now playing</p>
+					<p class="pl-title">
+						{music.title}
+						<span>{music.artist}</span>
+					</p>
+				</div>
+				<button class="pl-btn" type="button" data-toggle aria-label="Play music">
+					<svg class="i-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+						<path d="M7 4.5v15l13-7.5z" fill="currentColor" />
+					</svg>
+					<svg class="i-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+						<path d="M6 4.5h4v15H6zM14 4.5h4v15h-4z" fill="currentColor" />
+					</svg>
+				</button>
+				<button class="pl-min" type="button" data-min aria-label="Make the video window smaller" aria-pressed="false">
+					<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+						<path d="M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
+					</svg>
+				</button>
+			</div>
+			<div class="pl-screen">
+				<div id="yt-slot" />
+			</div>
+		</aside>
+	)
+}
+
+<style>
+	.player {
+		display: none;
+		position: fixed;
+		right: 1rem;
+		bottom: 1rem;
+		z-index: 60;
+		width: min(20rem, calc(100vw - 2rem));
+		padding: 0.6rem;
+		border-radius: 14px;
+		background: linear-gradient(160deg, rgba(42, 10, 77, 0.94), rgba(18, 5, 43, 0.96));
+		border: 2px solid var(--neon, #19e3d8);
+		box-shadow: 0 0 26px rgba(25, 227, 216, 0.4), 6px 6px 0 rgba(0, 0, 0, 0.45);
+		backdrop-filter: blur(8px);
+		color: #fff;
+	}
+	:global(html[data-theme='gta']) .player {
+		display: block;
+	}
+	.pl-head {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+	}
+	.eq {
+		display: flex;
+		align-items: flex-end;
+		gap: 3px;
+		height: 1.6rem;
+		flex: none;
+	}
+	.eq i {
+		display: block;
+		width: 5px;
+		height: 30%;
+		border-radius: 2px;
+		background: linear-gradient(to top, #ff2e93, #ffd23f);
+	}
+	.player.playing .eq i {
+		animation: bounce 0.9s ease-in-out infinite;
+	}
+	.eq i:nth-child(2) { animation-delay: -0.3s; }
+	.eq i:nth-child(3) { animation-delay: -0.6s; }
+	.eq i:nth-child(4) { animation-delay: -0.15s; }
+	@keyframes bounce {
+		0%, 100% { height: 25%; }
+		50% { height: 100%; }
+	}
+	.pl-meta {
+		flex: 1;
+		min-width: 0;
+	}
+	.pl-meta p {
+		margin: 0;
+		line-height: 1.2;
+	}
+	.pl-now {
+		font-size: 0.78rem;
+		color: var(--neon, #19e3d8);
+		font-weight: 700;
+	}
+	.pl-title {
+		font-weight: 800;
+		font-size: 0.98rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.pl-title span {
+		font-weight: 500;
+		color: #cdb8ee;
+		margin-left: 0.4rem;
+		font-size: 0.85rem;
+	}
+	.pl-btn,
+	.pl-min {
+		display: grid;
+		place-items: center;
+		border: 0;
+		cursor: pointer;
+		flex: none;
+		color: #1a0630;
+	}
+	.pl-btn {
+		width: 2.6rem;
+		height: 2.6rem;
+		border-radius: 50%;
+		background: linear-gradient(135deg, #ffd23f, #ff2e93);
+		box-shadow: 0 0 16px rgba(255, 46, 147, 0.6);
+		transition: transform 0.12s;
+	}
+	.pl-btn:hover {
+		transform: scale(1.1);
+	}
+	.pl-min {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.12);
+		color: #fff;
+	}
+	.pl-min:hover {
+		background: rgba(255, 255, 255, 0.25);
+	}
+	.i-pause { display: none; }
+	.player.playing .i-play { display: none; }
+	.player.playing .i-pause { display: block; }
+
+	/* Video window, always visible while the song plays */
+	.pl-screen {
+		margin-top: 0.6rem;
+		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		overflow: hidden;
+		background: #000;
+		transition: width 0.25s, margin 0.25s;
+	}
+	.pl-screen :global(iframe) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: 0;
+	}
+	.player.small .pl-screen {
+		width: 6rem;
+		margin-left: auto;
+	}
+	@media (max-width: 40rem) {
+		.player {
+			right: 0.5rem;
+			bottom: 0.5rem;
+			width: calc(100vw - 1rem);
+		}
+		.player.small .pl-screen {
+			width: 7.5rem;
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.eq i { animation: none !important; }
+	}
+</style>
+
+<script>
+	const root = document.querySelector<HTMLElement>('[data-player]');
+	const gta = document.documentElement.dataset.theme === 'gta';
+
+	if (root && gta) {
+		const win = window as any;
+		const videoId = root.dataset.video!;
+		const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+		const min = root.querySelector<HTMLButtonElement>('[data-min]')!;
+		let player: any = null;
+		let wantPlay = false;
+
+		const setPlaying = (on: boolean) => {
+			root.classList.toggle('playing', on);
+			toggle.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
+		};
+
+		const create = () => {
+			player = new win.YT.Player('yt-slot', {
+				videoId,
+				playerVars: { playsinline: 1, rel: 0, modestbranding: 1, loop: 1, playlist: videoId },
+				events: {
+					onReady: () => {
+						if (wantPlay) player.playVideo();
+					},
+					onStateChange: (e: any) => setPlaying(e.data === 1 || e.data === 3),
+				},
+			});
+		};
+
+		// Load YouTube's player script once.
+		const prior = win.onYouTubeIframeAPIReady;
+		win.onYouTubeIframeAPIReady = () => {
+			prior?.();
+			create();
+		};
+		const tag = document.createElement('script');
+		tag.src = 'https://www.youtube.com/iframe_api';
+		document.head.appendChild(tag);
+
+		const play = () => {
+			wantPlay = true;
+			if (player?.playVideo) player.playVideo();
+		};
+		const pause = () => {
+			wantPlay = false;
+			player?.pauseVideo?.();
+		};
+
+		toggle.addEventListener('click', () => (root.classList.contains('playing') ? pause() : play()));
+		min.addEventListener('click', () => {
+			const small = root.classList.toggle('small');
+			min.setAttribute('aria-pressed', String(small));
+			min.setAttribute('aria-label', small ? 'Make the video window bigger' : 'Make the video window smaller');
+		});
+		// The intro screen asks people to press start; that tap is what lets the music begin.
+		document.addEventListener('hobley:start', play);
+
+		if (matchMedia('(max-width: 40rem)').matches) {
+			root.classList.add('small');
+			min.setAttribute('aria-pressed', 'true');
+		}
+	}
+</script>

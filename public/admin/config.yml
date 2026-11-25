@@ -235,3 +235,19 @@ collections:
             widget: image
             required: false
             hint: Upload a square picture. It is shown as a circle.
+      - name: music
+        label: Music player (Miami theme)
+        file: src/content/music.json
+        format: json
+        fields:
+          - label: Song name
+            name: title
+            widget: string
+          - label: Artist
+            name: artist
+            widget: string
+          - label: YouTube link
+            name: url
+            widget: string
+            pattern: ["^https://(www\\.)?(youtube\\.com/watch\\?v=|youtu\\.be/).{11}.*", "Paste a YouTube video link"]
+            hint: The song plays from this YouTube video in the player on the Miami theme. Use an official upload so it can be embedded.

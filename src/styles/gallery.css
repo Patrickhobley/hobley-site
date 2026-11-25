@@ -128,7 +128,7 @@
 	inset: 0;
 	display: grid;
 	place-items: center;
-	background: rgba(22, 63, 58, 0.25);
+	background: color-mix(in srgb, var(--wall) 25%, transparent);
 }
 .play::after {
 	content: "";
@@ -168,7 +168,7 @@
 	padding: 0;
 	border: 4px solid var(--accent);
 	border-radius: 6px;
-	background: #0d2926;
+	background: var(--viewer-bg, #0d2926);
 	color: var(--paper);
 	box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.5);
 }
@@ -179,7 +179,7 @@
 	from { opacity: 0; transform: scale(0.9) rotateX(8deg); }
 }
 .viewer::backdrop {
-	background: rgba(5, 20, 18, 0.88);
+	background: rgba(var(--vig, 5, 20, 18), 0.88);
 	backdrop-filter: blur(4px);
 }
 .viewer-body {

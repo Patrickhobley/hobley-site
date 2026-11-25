@@ -1,0 +1,158 @@
+/* Miami theme: neon sunset, hot pink and cyan. Shown on gta.hobley.me or with ?theme=gta */
+html[data-theme="gta"] {
+	--wall: #12052b;
+	--paper: #fff0f7;
+	--ink: #fff0f7;
+	--ink-on-paper: #1a0630;
+	--mute: #cdb8ee;
+	--line: #4b2382;
+	--accent: #ff2e93;
+	--accent-ink: #1a0630;
+	--stripe-1: #ffd23f;
+	--stripe-2: #ff7a3d;
+	--stripe-3: #ff2e93;
+	--neon: #19e3d8;
+	--display: "Bowlby One", Impact, "Arial Black", sans-serif;
+	--text: "Outfit", "Helvetica Neue", Arial, sans-serif;
+	--sun-a: #ffe14d;
+	--sun-b: #ff5fa2;
+	--sun-c: #8b2fe0;
+	--grid-rgb: 25, 227, 216;
+	--vig: 10, 2, 25;
+	--viewer-bg: #1a0a35;
+	background: linear-gradient(#12052b 0%, #2a0a4d 55%, #5a1470 100%) fixed;
+}
+
+html[data-theme="gta"] body {
+	letter-spacing: 0.01em;
+}
+
+/* Header bar */
+html[data-theme="gta"] .site-bar {
+	background: rgba(18, 5, 43, 0.82);
+	border-bottom: 3px solid var(--stripe-3);
+	box-shadow: 0 4px 0 var(--stripe-2), 0 10px 26px rgba(255, 46, 147, 0.35);
+}
+html[data-theme="gta"] .g-mark {
+	color: var(--stripe-1);
+	font-size: 1.7rem;
+	text-shadow: 2px 2px 0 var(--stripe-3), 0 0 16px rgba(255, 46, 147, 0.7);
+}
+html[data-theme="gta"] .g-mark:hover {
+	color: var(--stripe-1);
+}
+
+/* Name: sunset gradient with a neon glow */
+html[data-theme="gta"] .profile h1 {
+	text-shadow: none;
+	filter: drop-shadow(3px 3px 0 #3b0a5c) drop-shadow(0 0 22px rgba(255, 46, 147, 0.65));
+	font-size: clamp(3.2rem, 14vw, 4.8rem);
+}
+html[data-theme="gta"] .profile h1 .ch,
+html[data-theme="gta"] .g-title .ch {
+	background: linear-gradient(to bottom, #ffe14d 0%, #ff8a3d 45%, #ff2e93 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+html[data-theme="gta"] .g-title {
+	text-shadow: none;
+	filter: drop-shadow(3px 3px 0 #3b0a5c) drop-shadow(0 0 22px rgba(255, 46, 147, 0.6));
+}
+html[data-theme="gta"] .subtitle {
+	color: var(--neon);
+	font-weight: 600;
+}
+html[data-theme="gta"] .intro {
+	color: var(--paper);
+}
+html[data-theme="gta"] .avatar-wrap::before {
+	box-shadow: 0 0 28px rgba(255, 46, 147, 0.6);
+}
+
+/* Section headings */
+html[data-theme="gta"] .group-title {
+	color: #fff;
+	text-shadow: 0 0 14px rgba(25, 227, 216, 0.6);
+}
+
+/* Buttons: glass with a neon edge */
+html[data-theme="gta"] .link-button {
+	background: rgba(255, 255, 255, 0.07);
+	color: #fff;
+	border: 2px solid var(--neon);
+	box-shadow: 0 0 18px rgba(25, 227, 216, 0.35), 5px 5px 0 rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(4px);
+	letter-spacing: 0.03em;
+}
+html[data-theme="gta"] .link-button:hover {
+	background: linear-gradient(90deg, #ff2e93, #ff7a3d);
+	color: #1a0630;
+	border-color: #ffd23f;
+	box-shadow: 0 0 28px rgba(255, 46, 147, 0.7), 8px 8px 0 rgba(0, 0, 0, 0.4);
+}
+html[data-theme="gta"] .link-button.featured {
+	background: linear-gradient(90deg, #ffd23f, #ff7a3d 50%, #ff2e93);
+	color: #1a0630;
+	border-color: #fff;
+	box-shadow: 0 0 30px rgba(255, 46, 147, 0.55), 5px 5px 0 rgba(0, 0, 0, 0.4);
+}
+html[data-theme="gta"] .link-button.featured:hover {
+	background: #fff;
+	border-color: var(--neon);
+}
+
+/* Round social icons */
+html[data-theme="gta"] .social-icon {
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	box-shadow: 0 0 0 3px var(--wall), 0 0 0 5px var(--neon), 0 0 24px rgba(25, 227, 216, 0.55);
+}
+html[data-theme="gta"] .social-icon:hover {
+	background: linear-gradient(135deg, #ffd23f, #ff2e93);
+	color: #1a0630;
+	box-shadow: 0 0 0 3px var(--wall), 0 0 0 5px #ffd23f, 0 0 30px rgba(255, 46, 147, 0.8);
+}
+
+/* Gallery */
+html[data-theme="gta"] .chip {
+	border-color: var(--neon);
+	color: var(--neon);
+	box-shadow: 0 0 12px rgba(25, 227, 216, 0.3);
+}
+html[data-theme="gta"] .chip:hover {
+	background: rgba(25, 227, 216, 0.15);
+}
+html[data-theme="gta"] .chip[aria-pressed="true"] {
+	background: linear-gradient(90deg, #ffd23f, #ff2e93);
+	border-color: transparent;
+	color: #1a0630;
+	box-shadow: 0 0 18px rgba(255, 46, 147, 0.6);
+}
+html[data-theme="gta"] .tile {
+	box-shadow: 6px 7px 0 rgba(0, 0, 0, 0.45), 0 0 22px rgba(255, 46, 147, 0.25);
+}
+html[data-theme="gta"] .tile:hover,
+html[data-theme="gta"] .tile:focus-visible {
+	box-shadow: 10px 14px 0 rgba(0, 0, 0, 0.45), 0 0 0 4px var(--accent), 0 0 34px rgba(255, 46, 147, 0.7);
+}
+html[data-theme="gta"] .viewer {
+	box-shadow: 0 0 40px rgba(255, 46, 147, 0.5), 10px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* Footer */
+html[data-theme="gta"] .site-footer {
+	border-top-color: var(--stripe-3);
+}
+html[data-theme="gta"] .footer-links a {
+	border-bottom-color: var(--neon);
+}
+
+/* Theme switch links in the footer: show the one for the other theme */
+.theme-switch {
+	margin-bottom: 0.6rem;
+}
+html[data-theme="gta"] .theme-switch .to-gta,
+html:not([data-theme="gta"]) .theme-switch .to-retro {
+	display: none;
+}

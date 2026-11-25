@@ -11,10 +11,25 @@ const prints = [
 ];
 ---
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+	<defs>
+		<g id="palm" fill="currentColor">
+			<path d="M96 320 C92 240 100 160 122 84 L132 86 C112 164 106 240 112 320Z" />
+			<path d="M126 84 Q80 30 6 84 Q76 58 126 84Z" />
+			<path d="M126 84 Q60 66 14 150 Q70 92 126 84Z" />
+			<path d="M126 84 Q120 20 56 4 Q108 36 126 84Z" />
+			<path d="M126 84 Q150 24 214 26 Q154 44 126 84Z" />
+			<path d="M126 84 Q186 56 226 120 Q176 84 126 84Z" />
+			<path d="M126 84 Q170 90 196 160 Q160 110 126 84Z" />
+		</g>
+	</defs>
+</svg>
 <div class="scene" aria-hidden="true">
 	<div class="stage">
 		<div class="sun"></div>
 		<div class="floor"><div class="grid"></div></div>
+		<svg class="palm palm-l" viewBox="0 0 200 320" aria-hidden="true"><use href="#palm" /></svg>
+		<svg class="palm palm-r" viewBox="0 0 200 320" aria-hidden="true"><use href="#palm" /></svg>
 		<div class="prints">
 			{
 				prints.map((p) => (
@@ -62,7 +77,7 @@ const prints = [
 		aspect-ratio: 1;
 		translate: -50% -100%;
 		border-radius: 50%;
-		background: linear-gradient(to bottom, #f2b632 10%, #e8742c 55%, #c8412b 90%);
+		background: linear-gradient(to bottom, var(--sun-a, #f2b632) 10%, var(--sun-b, #e8742c) 55%, var(--sun-c, #c8412b) 90%);
 		/* horizontal slits that grow toward the bottom, like a 70s sunset */
 		--slits: linear-gradient(
 			to bottom,
@@ -78,7 +93,7 @@ const prints = [
 		-webkit-mask-image: var(--slits);
 		mask-image: var(--slits);
 		opacity: 0.55;
-		filter: drop-shadow(0 0 3rem rgba(242, 182, 50, 0.3));
+		filter: drop-shadow(0 0 3rem rgba(var(--grid-rgb, 242, 182, 50), 0.3));
 		animation: sun-breathe 9s ease-in-out infinite;
 	}
 
@@ -102,8 +117,8 @@ const prints = [
 		top: -80px;
 		bottom: 0;
 		background-image:
-			linear-gradient(to right, rgba(242, 182, 50, 0.4) 2px, transparent 2px),
-			linear-gradient(to bottom, rgba(242, 182, 50, 0.4) 2px, transparent 2px);
+			linear-gradient(to right, rgba(var(--grid-rgb, 242, 182, 50), 0.4) 2px, transparent 2px),
+			linear-gradient(to bottom, rgba(var(--grid-rgb, 242, 182, 50), 0.4) 2px, transparent 2px);
 		background-size: 80px 80px;
 		animation: grid-run 2.4s linear infinite;
 	}
@@ -113,7 +128,7 @@ const prints = [
 		position: absolute;
 		inset: 0 0 auto 0;
 		height: 14%;
-		background: linear-gradient(to bottom, rgba(242, 182, 50, 0.45), transparent);
+		background: linear-gradient(to bottom, rgba(var(--grid-rgb, 242, 182, 50), 0.45), transparent);
 		z-index: 1;
 	}
 
@@ -161,10 +176,55 @@ const prints = [
 			linear-gradient(to bottom, #35655d 0 45%, #f2b632 45% 60%, #163f3a 60%);
 	}
 
+	.palm {
+		display: none;
+		position: absolute;
+		top: 58vh;
+		height: min(46vh, 28rem);
+		width: auto;
+		translate: 0 -94%;
+		color: #0a0218;
+		filter: drop-shadow(0 0 1.2rem rgba(255, 46, 147, 0.55));
+		transform-origin: 50% 100%;
+		animation: sway 7s ease-in-out infinite;
+	}
+	.palm-l {
+		left: max(-1rem, 2vw);
+	}
+	.palm-r {
+		right: max(-1rem, 2vw);
+		scale: -0.85 0.85;
+		animation-delay: -3s;
+	}
+	:global(html[data-theme='gta']) .palm {
+		display: block;
+	}
+	@media (max-width: 40rem) {
+		.palm {
+			height: 30vh;
+		}
+	}
+	@keyframes sway {
+		50% {
+			transform: rotate(1.6deg);
+		}
+	}
+	:global(html[data-theme='gta']) .tone-1 {
+		background:
+			radial-gradient(circle at 70% 30%, #ffe14d 0 14%, transparent 15%),
+			linear-gradient(to bottom, #ff5fa2 0 55%, #2a0a4d 55%);
+	}
+	:global(html[data-theme='gta']) .tone-2 {
+		background: linear-gradient(135deg, #8b2fe0, #ff2e93 60%, #ffd23f);
+	}
+	:global(html[data-theme='gta']) .tone-3 {
+		background: linear-gradient(to bottom, #19e3d8 0 45%, #ff7a3d 45% 60%, #2a0a4d 60%);
+	}
+
 	.vignette {
 		position: absolute;
 		inset: 0;
-		background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(5, 20, 18, 0.65) 100%);
+		background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(var(--vig, 5, 20, 18), 0.65) 100%);
 	}
 
 	@keyframes grid-run {
