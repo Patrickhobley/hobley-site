@@ -1,5 +1,6 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = "Hobley";
-export const SITE_DESCRIPTION = "The personal website of Patrick Hobley.";
+// Global site text. Change it here and it updates everywhere.
+export const SITE_TITLE = "Patrick Hobley";
+export const SITE_DESCRIPTION =
+	"Patrick Hobley is a photographer and videographer in Sussex, shooting property interiors and exteriors, festivals, events and press work.";
+export const EMAIL = "patrick@hobley.me";
+export const LINKEDIN = "https://www.linkedin.com/in/patrickhobley/";

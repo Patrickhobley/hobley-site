@@ -1,26 +1,57 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import Base from '../layouts/Base.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import { getGallery } from '../lib/gallery';
+
+const { items, usedTags } = await getGallery();
+const recent = [...items]
+	.sort((a, b) => Number(b.featured) - Number(a.featured))
+	.slice(0, 9);
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>Hobley</h1>
-			<p>Welcome — this is the personal website of Patrick Hobley.</p>
-			<p>
-				It's built with <a href="https://astro.build/">Astro</a>, hosted on Cloudflare, and updated
-				straight from <a href="https://github.com/Patrickhobley/hobley-site">GitHub</a>.
-			</p>
-			<p>Check out the <a href="/blog">blog</a> or read more <a href="/about">about me</a>.</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Base>
+	<section class="hero">
+		<h1>Patrick Hobley</h1>
+		<p class="lede">
+			I photograph and film property interiors and exteriors, festivals, events and press work, and
+			plan and produce the content around it. Based in Sussex.
+		</p>
+		{
+			usedTags.length > 0 && (
+				<ul class="chips" aria-label="Browse work by tag">
+					{usedTags.map((tag) => (
+						<li>
+							<a class="chip" href={`/gallery?tag=${tag.slug}`}>
+								{tag.title}
+							</a>
+						</li>
+					))}
+				</ul>
+			)
+		}
+	</section>
+
+	<section class="block">
+		<div class="block-head">
+			<h2>Recent work</h2>
+			{items.length > 0 && <a href="/gallery">See all work</a>}
+		</div>
+		{
+			items.length > 0 ? (
+				<GalleryGrid items={recent} />
+			) : (
+				<p class="empty">New work is on its way. Check back soon.</p>
+			)
+		}
+	</section>
+
+	<section class="block narrow">
+		<h2>Where the work has appeared</h2>
+		<p>
+			Property photography for estate agents including Rightmove and Savills. Press photos and
+			video through Alamy and Newsflare. Event coverage at festivals such as Good Vibrations and
+			Vegan Camp Out.
+		</p>
+		<p><a href="/about">More about me</a></p>
+	</section>
+</Base>

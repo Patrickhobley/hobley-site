@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import GalleryGrid from '../../components/GalleryGrid.astro';
+import { getGallery } from '../../lib/gallery';
+
+const { items, usedTags } = await getGallery();
+---
+
+<Base
+	title="Work"
+	description="Photography and video by Patrick Hobley: property interiors and exteriors, festivals, events and press."
+>
+	<section class="block">
+		<h1 class="page-title">Work</h1>
+		{
+			usedTags.length > 0 && (
+				<ul class="chips" aria-label="Filter by tag">
+					<li>
+						<button type="button" class="chip" data-filter="" aria-pressed="true">
+							All
+						</button>
+					</li>
+					{usedTags.map((tag) => (
+						<li>
+							<button type="button" class="chip" data-filter={tag.slug} aria-pressed="false">
+								{tag.title}
+							</button>
+						</li>
+					))}
+				</ul>
+			)
+		}
+		{
+			items.length > 0 ? (
+				<>
+					<GalleryGrid items={items} />
+					<p class="empty" data-filter-empty hidden>
+						Nothing is tagged with that yet.
+					</p>
+				</>
+			) : (
+				<p class="empty">New work is on its way. Check back soon.</p>
+			)
+		}
+	</section>
+</Base>
