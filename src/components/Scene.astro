@@ -2,12 +2,12 @@
 // A 3D photo-lab backdrop made from CSS only: striped sun, gridded floor rushing
 // toward you, and photo prints floating at different depths. It sits behind the page.
 const prints = [
-	{ x: '-34vw', y: '-14vh', z: '-120px', r: '-14deg', ry: '24deg', s: 1, d: '0s', c: 1 },
-	{ x: '30vw', y: '-24vh', z: '-260px', r: '10deg', ry: '-28deg', s: 1.2, d: '-2s', c: 2 },
-	{ x: '-26vw', y: '16vh', z: '60px', r: '8deg', ry: '30deg', s: 0.8, d: '-4s', c: 3 },
-	{ x: '34vw', y: '10vh', z: '-40px', r: '-9deg', ry: '-24deg', s: 0.9, d: '-1s', c: 1 },
-	{ x: '-8vw', y: '-34vh', z: '-380px', r: '5deg', ry: '14deg', s: 1.1, d: '-3s', c: 2 },
-	{ x: '10vw', y: '30vh', z: '-200px', r: '-6deg', ry: '-18deg', s: 0.7, d: '-5s', c: 3 },
+	{ x: 'calc(-1 * max(22rem, 34vw))', y: '-14vh', z: '-120px', r: '-14deg', ry: '24deg', s: 1, d: '0s', c: 1 },
+	{ x: 'max(22rem, 33vw)', y: '-24vh', z: '-260px', r: '10deg', ry: '-28deg', s: 1.2, d: '-2s', c: 2 },
+	{ x: 'calc(-1 * max(24rem, 38vw))', y: '16vh', z: '60px', r: '8deg', ry: '30deg', s: 0.8, d: '-4s', c: 3 },
+	{ x: 'max(25rem, 40vw)', y: '10vh', z: '-40px', r: '-9deg', ry: '-24deg', s: 0.9, d: '-1s', c: 1 },
+	{ x: 'calc(-1 * max(18rem, 22vw))', y: '-34vh', z: '-380px', r: '5deg', ry: '14deg', s: 1.1, d: '-3s', c: 2 },
+	{ x: 'max(19rem, 24vw)', y: '30vh', z: '-200px', r: '-6deg', ry: '-18deg', s: 0.7, d: '-5s', c: 3 },
 ];
 ---
 
@@ -58,7 +58,7 @@ const prints = [
 		position: absolute;
 		left: 50%;
 		top: 58vh;
-		width: min(70vmin, 34rem);
+		width: min(52vmin, 26rem);
 		aspect-ratio: 1;
 		translate: -50% -100%;
 		border-radius: 50%;
@@ -77,8 +77,8 @@ const prints = [
 		);
 		-webkit-mask-image: var(--slits);
 		mask-image: var(--slits);
-		opacity: 0.9;
-		filter: drop-shadow(0 0 3rem rgba(242, 182, 50, 0.35));
+		opacity: 0.55;
+		filter: drop-shadow(0 0 3rem rgba(242, 182, 50, 0.3));
 		animation: sun-breathe 9s ease-in-out infinite;
 	}
 
@@ -102,8 +102,8 @@ const prints = [
 		top: -80px;
 		bottom: 0;
 		background-image:
-			linear-gradient(to right, rgba(242, 182, 50, 0.55) 2px, transparent 2px),
-			linear-gradient(to bottom, rgba(242, 182, 50, 0.55) 2px, transparent 2px);
+			linear-gradient(to right, rgba(242, 182, 50, 0.4) 2px, transparent 2px),
+			linear-gradient(to bottom, rgba(242, 182, 50, 0.4) 2px, transparent 2px);
 		background-size: 80px 80px;
 		animation: grid-run 2.4s linear infinite;
 	}
@@ -187,12 +187,9 @@ const prints = [
 		}
 	}
 
-	@media (max-width: 40rem) {
-		.print:nth-child(n + 4) {
+	@media (max-width: 52rem) {
+		.prints {
 			display: none;
-		}
-		.print {
-			transform: translate3d(calc(var(--x) * 0.6), var(--y), var(--z));
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
