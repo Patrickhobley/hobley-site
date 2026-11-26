@@ -148,11 +148,18 @@ html[data-theme="gta"] .footer-links a {
 	border-bottom-color: var(--neon);
 }
 
-/* Theme switch links in the footer: show the one for the other theme */
-.theme-switch {
-	margin-bottom: 0.6rem;
+/* Theme buttons in the footer */
+html[data-theme="gta"] .theme-btn {
+	border-color: var(--neon);
+	color: var(--neon);
+	box-shadow: 0 0 14px rgba(25, 227, 216, 0.35);
 }
-html[data-theme="gta"] .theme-switch .to-gta,
-html:not([data-theme="gta"]) .theme-switch .to-retro {
-	display: none;
+html[data-theme="gta"] .theme-btn:hover {
+	background: rgba(25, 227, 216, 0.15);
+}
+html[data-theme="gta"] .theme-btn[aria-current="true"] {
+	background: linear-gradient(90deg, #ffd23f, #ff2e93);
+	border-color: transparent;
+	color: #1a0630;
+	box-shadow: 0 0 18px rgba(255, 46, 147, 0.6);
 }

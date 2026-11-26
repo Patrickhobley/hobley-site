@@ -131,6 +131,38 @@ p {
 .footer-links a:hover {
 	color: var(--accent);
 }
+.theme-buttons {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	margin-bottom: 1.1rem;
+}
+.theme-label {
+	color: var(--mute);
+	font-weight: 700;
+	margin-right: 0.2rem;
+}
+.theme-btn {
+	padding: 0.55rem 1.2rem;
+	border: 2px solid var(--accent);
+	border-radius: 999px;
+	color: var(--accent);
+	font-weight: 800;
+	font-size: 1rem;
+	text-decoration: none;
+	box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+	transition: transform 0.12s, background 0.15s, color 0.15s;
+}
+.theme-btn:hover {
+	transform: translate(-1px, -2px);
+	background: color-mix(in srgb, var(--accent) 22%, transparent);
+	color: var(--accent);
+}
+.theme-btn[aria-current="true"] {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
 
 /* Top bar */
 .site-bar {

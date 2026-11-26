@@ -8,9 +8,22 @@ const year = new Date().getFullYear();
 		<a href="/gallery/">Gallery</a>
 		<a href="mailto:patrick@hobley.me">Email</a>
 	</nav>
-	<p class="theme-switch">
-		<a class="to-gta" href="/?theme=gta" rel="nofollow">Try the Miami theme</a>
-		<a class="to-retro" href="/?theme=retro" rel="nofollow">Back to the classic theme</a>
-	</p>
+	<div class="theme-buttons" role="group" aria-label="Site theme">
+		<span class="theme-label">Theme</span>
+		<a class="theme-btn" data-theme-btn="retro" href="/?theme=retro">Classic</a>
+		<a class="theme-btn" data-theme-btn="gta" href="/?theme=gta">Miami</a>
+	</div>
 	<p>&copy; {year} Patrick Hobley</p>
 </footer>
+
+<script>
+	// Classic lives on hobley.me and Miami on gta.hobley.me. Anywhere else (previews), the buttons switch the theme in place.
+	const host = location.hostname;
+	const live = ['hobley.me', 'www.hobley.me', 'gta.hobley.me'].includes(host);
+	const current = document.documentElement.dataset.theme === 'gta' ? 'gta' : 'retro';
+	document.querySelectorAll<HTMLAnchorElement>('[data-theme-btn]').forEach((a) => {
+		const which = a.dataset.themeBtn!;
+		if (live) a.href = `https://${which === 'gta' ? 'gta.hobley.me' : 'hobley.me'}${location.pathname}`;
+		if (which === current) a.setAttribute('aria-current', 'true');
+	});
+</script>
