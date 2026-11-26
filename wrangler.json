@@ -23,5 +23,18 @@
 			"pattern": "gta.hobley.me",
 			"custom_domain": true
 		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "MEDIA",
+			"id": "f8f8ff8999d94984b3e96353812e5e52"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "hobley-gallery",
+			"database_id": "83295f0d-db82-4268-9b38-783fcc2e8cf4"
+		}
 	]
 }

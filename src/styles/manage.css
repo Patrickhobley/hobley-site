@@ -1,0 +1,306 @@
+/* /manage: gallery manager. Uses the site colours, with plain form controls that are easy to read and tap. */
+.mg {
+	width: min(100% - 2 * var(--gutter), 56rem);
+	margin: 0 auto;
+	padding: 2.5rem 0 1rem;
+	font-size: 1.05rem;
+}
+.mg h1 {
+	font-size: clamp(2rem, 6vw, 3rem);
+	color: var(--accent);
+	margin: 0 0 0.4rem;
+}
+.mg-note {
+	color: var(--mute);
+}
+.mg-card {
+	max-width: 28rem;
+	margin: 1rem auto;
+	padding: 1.6rem;
+	border-radius: 10px;
+	background: var(--paper);
+	color: var(--ink-on-paper);
+	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.32);
+	display: grid;
+	gap: 1rem;
+}
+.mg-card h1 {
+	color: var(--ink-on-paper);
+	text-shadow: none;
+}
+.mg-card p {
+	margin: 0;
+}
+.mg-field {
+	display: grid;
+	gap: 0.3rem;
+}
+.mg-field > span {
+	font-weight: 800;
+}
+.mg-field small {
+	color: inherit;
+	opacity: 0.7;
+}
+.mg input[type="text"],
+.mg input[type="password"],
+.mg textarea {
+	width: 100%;
+	padding: 0.7rem 0.8rem;
+	border: 2px solid #8a8570;
+	border-radius: 6px;
+	background: #fff;
+	color: #1d1b10;
+	font: inherit;
+}
+.mg input:focus-visible,
+.mg textarea:focus-visible {
+	outline: 3px solid var(--accent);
+	outline-offset: 1px;
+}
+.mg-btn {
+	display: inline-block;
+	padding: 0.7rem 1.1rem;
+	border: 2px solid var(--accent);
+	border-radius: 999px;
+	background: transparent;
+	color: var(--accent);
+	font: 800 1rem var(--text);
+	text-decoration: none;
+	cursor: pointer;
+}
+.mg-btn:hover {
+	background: color-mix(in srgb, var(--accent) 22%, transparent);
+	color: var(--accent);
+}
+.mg-btn.primary {
+	background: var(--accent);
+	color: var(--accent-ink);
+}
+.mg-btn.primary:hover {
+	background: var(--paper);
+	color: var(--ink-on-paper);
+}
+.mg-btn.danger {
+	border-color: #c8412b;
+	color: #c8412b;
+}
+.mg-btn:disabled {
+	opacity: 0.5;
+	cursor: wait;
+}
+.mg-card .mg-btn {
+	border-color: var(--ink-on-paper);
+	color: var(--ink-on-paper);
+}
+.mg-card .mg-btn.primary {
+	background: var(--ink-on-paper);
+	color: var(--paper);
+}
+.mg-link {
+	justify-self: center;
+	color: var(--ink-on-paper);
+}
+.mg-error {
+	margin: 0;
+	padding: 0.7rem 0.9rem;
+	border-radius: 6px;
+	background: #fde4de;
+	color: #7a1a0a;
+	font-weight: 700;
+}
+.mg-error.okmsg {
+	background: #dff3df;
+	color: #14501a;
+}
+.mg-error[hidden] {
+	display: none;
+}
+
+.mg-top {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.8rem;
+	margin-bottom: 1.2rem;
+}
+.mg-top h1 {
+	margin: 0;
+}
+.mg-top-links {
+	display: flex;
+	gap: 0.6rem;
+}
+
+.mg-drop {
+	display: grid;
+	gap: 0.3rem;
+	justify-items: center;
+	text-align: center;
+	padding: 2.2rem 1rem;
+	border: 3px dashed var(--accent);
+	border-radius: 12px;
+	cursor: pointer;
+	transition: background 0.15s, transform 0.15s;
+}
+.mg-drop strong {
+	font-family: var(--display);
+	font-weight: 400;
+	font-size: 1.5rem;
+	color: var(--accent);
+}
+.mg-drop span {
+	color: var(--mute);
+}
+.mg-drop:hover,
+.mg-drop.over {
+	background: color-mix(in srgb, var(--accent) 14%, transparent);
+	transform: scale(1.01);
+}
+.mg-file {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+}
+.mg-drop:focus-within {
+	outline: 3px solid #fff;
+	outline-offset: 3px;
+}
+
+.mg-queue {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+	display: grid;
+	gap: 0.5rem;
+}
+.mg-queue li {
+	display: grid;
+	grid-template-columns: 1fr 8rem auto;
+	gap: 0.8rem;
+	align-items: center;
+	padding: 0.5rem 0.8rem;
+	border-radius: 6px;
+	background: color-mix(in srgb, var(--paper) 10%, transparent);
+}
+.mg-queue li span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.mg-queue em {
+	font-style: normal;
+	color: var(--mute);
+}
+.mg-queue li.ok em {
+	color: #8fe08f;
+}
+.mg-queue li.bad em {
+	color: #ff9d8a;
+	font-weight: 700;
+}
+
+.mg-list {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+	display: grid;
+	gap: 1.2rem;
+}
+.mg-item {
+	display: grid;
+	grid-template-columns: 11rem 1fr;
+	gap: 1.2rem;
+	padding: 1rem;
+	border-radius: 10px;
+	background: var(--paper);
+	color: var(--ink-on-paper);
+	box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+}
+.mg-thumb {
+	position: relative;
+	align-self: start;
+	aspect-ratio: 1;
+	overflow: hidden;
+	border-radius: 6px;
+	background: #cfc9b4;
+}
+.mg-thumb img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.mg-blank {
+	display: grid;
+	place-items: center;
+	height: 100%;
+	font-weight: 800;
+}
+.mg-thumb b {
+	position: absolute;
+	left: 0.4rem;
+	bottom: 0.4rem;
+	padding: 0.15rem 0.5rem;
+	border-radius: 999px;
+	background: var(--accent);
+	color: var(--accent-ink);
+	font-size: 0.85rem;
+}
+.mg-edit {
+	display: grid;
+	gap: 0.8rem;
+}
+.mg-item .mg-btn {
+	border-color: var(--ink-on-paper);
+	color: var(--ink-on-paper);
+}
+.mg-item .mg-btn.primary {
+	background: var(--ink-on-paper);
+	color: var(--paper);
+}
+.mg-item .mg-btn.danger {
+	border-color: #c8412b;
+	color: #c8412b;
+}
+.mg-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.6rem;
+}
+.mg-status {
+	font-weight: 700;
+}
+
+.mg-details {
+	margin-top: 2.5rem;
+	padding: 1rem 0;
+	border-top: 2px solid var(--line);
+}
+.mg-details summary {
+	cursor: pointer;
+	font-weight: 800;
+}
+.mg-pw {
+	display: grid;
+	gap: 0.8rem;
+	max-width: 22rem;
+	margin-top: 1rem;
+}
+.mg-pw .mg-field > span {
+	color: var(--ink);
+}
+
+@media (max-width: 40rem) {
+	.mg-item {
+		grid-template-columns: 1fr;
+	}
+	.mg-thumb {
+		aspect-ratio: 16 / 10;
+	}
+	.mg-queue li {
+		grid-template-columns: 1fr;
+	}
+}

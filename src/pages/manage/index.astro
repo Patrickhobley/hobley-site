@@ -1,0 +1,415 @@
+---
+import Base from '../../layouts/Base.astro';
+import '../../styles/manage.css';
+---
+
+<Base title="Manage gallery" description="Gallery manager" scene={false} noindex bare>
+	<section class="mg" id="app" aria-live="polite">
+		<p class="mg-note">Loading…</p>
+	</section>
+</Base>
+
+<script>
+	type Item = { id: string; title: string; kind: 'image' | 'video'; caption: string; alt: string; tags: string[]; url: string; thumb: string | null };
+
+	const app = document.getElementById('app')!;
+	const MAX = 25 * 1024 * 1024;
+
+	// ---------- helpers ----------
+	function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, any> = {}, ...kids: (Node | string | null | false)[]) {
+		const el = document.createElement(tag);
+		for (const [k, v] of Object.entries(attrs)) {
+			if (v === false || v == null) continue;
+			if (k === 'class') el.className = v;
+			else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+			else if (v === true) el.setAttribute(k, '');
+			else el.setAttribute(k, String(v));
+		}
+		for (const kid of kids) if (kid) el.append(kid);
+		return el;
+	}
+	const show = (...nodes: Node[]) => app.replaceChildren(...nodes);
+
+	async function api(path: string, opts: RequestInit = {}) {
+		const res = await fetch(path, {
+			credentials: 'same-origin',
+			...opts,
+			headers: { 'x-requested-with': 'manage', ...(opts.headers || {}) },
+		});
+		const data = await res.json().catch(() => ({}));
+		if (!res.ok) throw Object.assign(new Error(data.error || 'Something went wrong. Try again.'), { status: res.status });
+		return data;
+	}
+	const post = (path: string, body: unknown) =>
+		api(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+
+	function field(label: string, input: HTMLElement, hint?: string) {
+		return h('label', { class: 'mg-field' }, h('span', {}, label), input, hint ? h('small', {}, hint) : null);
+	}
+	function errorBox() {
+		return h('p', { class: 'mg-error', role: 'alert', hidden: true });
+	}
+	const say = (box: HTMLElement, text: string) => {
+		box.textContent = text;
+		box.hidden = !text;
+	};
+
+	// ---------- screens ----------
+	function setupScreen() {
+		const err = errorBox();
+		const code = h('input', { type: 'text', autocomplete: 'off', required: true, placeholder: 'XXXX-XXXX-XXXX', spellcheck: 'false' });
+		const pw = h('input', { type: 'password', autocomplete: 'new-password', required: true, minlength: 10 });
+		const pw2 = h('input', { type: 'password', autocomplete: 'new-password', required: true, minlength: 10 });
+		const form = h(
+			'form',
+			{
+				class: 'mg-card',
+				onsubmit: async (e: Event) => {
+					e.preventDefault();
+					say(err, '');
+					if (pw.value !== pw2.value) return say(err, 'The two passwords do not match.');
+					try {
+						await post('/api/setup', { code: code.value, password: pw.value });
+						dashboard();
+					} catch (x: any) {
+						say(err, x.message);
+					}
+				},
+			},
+			h('h1', {}, 'Set up your login'),
+			h('p', {}, 'Enter the setup code you were given, then choose a password for this page.'),
+			field('Setup code', code),
+			field('New password', pw, 'At least 10 characters. A few words in a row works well.'),
+			field('New password again', pw2),
+			err,
+			h('button', { class: 'mg-btn primary', type: 'submit' }, 'Save password and log in'),
+		);
+		show(form);
+	}
+
+	function loginScreen() {
+		const err = errorBox();
+		const pw = h('input', { type: 'password', autocomplete: 'current-password', required: true, autofocus: true });
+		show(
+			h(
+				'form',
+				{
+					class: 'mg-card',
+					onsubmit: async (e: Event) => {
+						e.preventDefault();
+						say(err, '');
+						try {
+							await post('/api/login', { password: pw.value });
+							dashboard();
+						} catch (x: any) {
+							say(err, x.message);
+							pw.select();
+						}
+					},
+				},
+				h('h1', {}, 'Gallery manager'),
+				h('p', {}, 'Log in to add, edit and remove photos and videos.'),
+				field('Password', pw),
+				err,
+				h('button', { class: 'mg-btn primary', type: 'submit' }, 'Log in'),
+				h('a', { class: 'mg-link', href: '/gallery/' }, 'Back to the gallery'),
+			),
+		);
+		pw.focus();
+	}
+
+	// ---------- image and video preparation ----------
+	const toBlob = (c: HTMLCanvasElement, type: string, q: number) => new Promise<Blob | null>((r) => c.toBlob(r, type, q));
+
+	async function scaled(source: ImageBitmap | HTMLVideoElement, w: number, h0: number, max: number, q: number, prefer: string) {
+		const ratio = Math.min(1, max / Math.max(w, h0));
+		const c = document.createElement('canvas');
+		c.width = Math.round(w * ratio);
+		c.height = Math.round(h0 * ratio);
+		c.getContext('2d')!.drawImage(source, 0, 0, c.width, c.height);
+		let blob = await toBlob(c, prefer, q);
+		if (!blob || blob.type !== prefer) blob = await toBlob(c, 'image/jpeg', q);
+		return blob!;
+	}
+
+	async function prepImage(file: File) {
+		const bmp = await createImageBitmap(file);
+		const thumb = await scaled(bmp, bmp.width, bmp.height, 800, 0.8, 'image/webp');
+		const keep = file.type === 'image/gif' || (file.size <= 1.5 * 1024 * 1024 && Math.max(bmp.width, bmp.height) <= 2400);
+		const full = keep ? file : await scaled(bmp, bmp.width, bmp.height, 2400, 0.86, 'image/webp');
+		return { full, thumb };
+	}
+
+	function videoPoster(file: File): Promise<Blob | null> {
+		return new Promise((resolve) => {
+			const url = URL.createObjectURL(file);
+			const v = document.createElement('video');
+			const done = (b: Blob | null) => {
+				URL.revokeObjectURL(url);
+				resolve(b);
+			};
+			v.muted = true;
+			v.playsInline = true;
+			v.preload = 'metadata';
+			v.onloadedmetadata = () => {
+				v.currentTime = Math.min(1, (v.duration || 2) / 2);
+			};
+			v.onseeked = async () => done(v.videoWidth ? await scaled(v, v.videoWidth, v.videoHeight, 800, 0.8, 'image/jpeg') : null);
+			v.onerror = () => done(null);
+			setTimeout(() => done(null), 12000);
+			v.src = url;
+		});
+	}
+
+	function send(url: string, body: Blob, onProgress?: (p: number) => void): Promise<any> {
+		return new Promise((resolve, reject) => {
+			const x = new XMLHttpRequest();
+			x.open('POST', url);
+			x.setRequestHeader('x-requested-with', 'manage');
+			x.setRequestHeader('content-type', body.type);
+			x.upload.onprogress = (e) => e.lengthComputable && onProgress?.(e.loaded / e.total);
+			x.onload = () => {
+				let data: any = {};
+				try {
+					data = JSON.parse(x.responseText);
+				} catch {}
+				x.status >= 200 && x.status < 300 ? resolve(data) : reject(new Error(data.error || 'Upload failed. Try again.'));
+			};
+			x.onerror = () => reject(new Error('Upload failed. Check your connection and try again.'));
+			x.send(body);
+		});
+	}
+
+	// ---------- dashboard ----------
+	async function dashboard() {
+		let items: Item[] = [];
+		try {
+			items = (await api('/api/items')).items;
+		} catch (x: any) {
+			if (x.status === 401) return loginScreen();
+			return show(h('p', { class: 'mg-error' }, x.message));
+		}
+
+		const list = h('ul', { class: 'mg-list' });
+		const count = h('p', { class: 'mg-note' });
+		const queue = h('ul', { class: 'mg-queue', 'aria-label': 'Uploads' });
+		const tagList = h('datalist', { id: 'mg-tags' });
+
+		const refreshTags = () => {
+			const all = new Set<string>();
+			items.forEach((i) => i.tags.forEach((t) => all.add(t)));
+			tagList.replaceChildren(...[...all].sort().map((t) => h('option', { value: t })));
+		};
+
+		const render = () => {
+			count.textContent = items.length
+				? `${items.length} ${items.length === 1 ? 'item' : 'items'}. Newest first, the same order as the gallery.`
+				: 'Nothing uploaded yet. The gallery is showing sample pictures until you add your first one.';
+			list.replaceChildren(...items.map(card));
+			refreshTags();
+		};
+
+		function card(item: Item) {
+			const title = h('input', { type: 'text', value: item.title, maxlength: 120, required: true });
+			const caption = h('textarea', { rows: 2, maxlength: 1000 }, item.caption);
+			const tags = h('input', { type: 'text', value: item.tags.join(', '), list: 'mg-tags', placeholder: 'Interiors, Festivals' });
+			const status = h('span', { class: 'mg-status', role: 'status' });
+			const del = h('button', { class: 'mg-btn danger', type: 'button' }, 'Delete');
+			let armed = false;
+			del.addEventListener('click', async () => {
+				if (!armed) {
+					armed = true;
+					del.textContent = 'Really delete?';
+					setTimeout(() => {
+						armed = false;
+						del.textContent = 'Delete';
+					}, 4000);
+					return;
+				}
+				del.disabled = true;
+				try {
+					await api(`/api/items/${item.id}`, { method: 'DELETE' });
+					items = items.filter((i) => i.id !== item.id);
+					render();
+				} catch (x: any) {
+					status.textContent = x.message;
+					del.disabled = false;
+				}
+			});
+			const form = h(
+				'form',
+				{
+					class: 'mg-edit',
+					onsubmit: async (e: Event) => {
+						e.preventDefault();
+						status.textContent = 'Saving…';
+						const next = tags.value.split(',').map((t) => t.trim()).filter(Boolean);
+						try {
+							await api(`/api/items/${item.id}`, {
+								method: 'PATCH',
+								headers: { 'content-type': 'application/json' },
+								body: JSON.stringify({ title: title.value, caption: caption.value, alt: item.alt, tags: next }),
+							});
+							Object.assign(item, { title: title.value.trim(), caption: caption.value, tags: next });
+							status.textContent = 'Saved';
+							refreshTags();
+						} catch (x: any) {
+							status.textContent = x.message;
+						}
+					},
+				},
+				field('Title', title),
+				field('Caption', caption),
+				field('Tags', tags, 'Separate with commas. Each tag becomes a button in the gallery menu.'),
+				h('div', { class: 'mg-actions' }, h('button', { class: 'mg-btn primary', type: 'submit' }, 'Save'), del, status),
+			);
+			const thumb = item.thumb
+				? h('img', { src: item.thumb, alt: '', loading: 'lazy' })
+				: h('span', { class: 'mg-blank' }, item.kind === 'video' ? 'Video' : 'No preview');
+			return h('li', { class: 'mg-item' }, h('div', { class: 'mg-thumb' }, thumb, item.kind === 'video' ? h('b', {}, 'Video') : null), form);
+		}
+
+		// uploads
+		async function upload(files: File[]) {
+			for (const file of files) {
+				const row = h('li', {}, h('span', {}, file.name), h('progress', { max: 1, value: 0 }), h('em', {}, 'Getting ready…'));
+				queue.prepend(row);
+				const bar = row.querySelector('progress') as HTMLProgressElement;
+				const msg = row.querySelector('em')!;
+				try {
+					const isVideo = file.type.startsWith('video/');
+					const isImage = file.type.startsWith('image/');
+					if (!isVideo && !isImage) throw new Error('Not a photo or video.');
+					if (isVideo && file.size > MAX) throw new Error('Over 25 MB. Trim or compress the video first.');
+
+					let body: Blob = file;
+					let thumb: Blob | null = null;
+					if (isImage) {
+						try {
+							const prepared = await prepImage(file);
+							body = prepared.full;
+							thumb = prepared.thumb;
+						} catch {
+							if (file.size > MAX) throw new Error('Over 25 MB, or a format this browser cannot open (try JPEG).');
+						}
+					} else {
+						thumb = await videoPoster(file);
+					}
+					if (body.size > MAX) throw new Error('Still over 25 MB. Try a smaller photo.');
+
+					msg.textContent = 'Uploading…';
+					const created = await send(`/api/upload?name=${encodeURIComponent(file.name)}`, body, (p) => (bar.value = p));
+					if (thumb) await send(`/api/upload?thumb=${created.id}`, thumb);
+					bar.value = 1;
+					msg.textContent = 'Done';
+					row.classList.add('ok');
+					items = (await api('/api/items')).items;
+					render();
+				} catch (x: any) {
+					msg.textContent = x.message;
+					row.classList.add('bad');
+				}
+			}
+		}
+
+		const input = h('input', {
+			type: 'file',
+			multiple: true,
+			accept: 'image/*,video/mp4,video/webm,video/quicktime',
+			class: 'mg-file',
+			onchange: () => {
+				upload([...input.files!]);
+				input.value = '';
+			},
+		});
+		const drop = h(
+			'label',
+			{ class: 'mg-drop' },
+			h('strong', {}, 'Drop photos and videos here'),
+			h('span', {}, 'or tap to choose from your device. Photos are resized for you. Videos can be up to 25 MB.'),
+			input,
+		);
+		['dragenter', 'dragover'].forEach((t) =>
+			drop.addEventListener(t, (e) => {
+				e.preventDefault();
+				drop.classList.add('over');
+			}),
+		);
+		['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, () => drop.classList.remove('over')));
+		drop.addEventListener('drop', (e) => {
+			e.preventDefault();
+			upload([...(e as DragEvent).dataTransfer!.files]);
+		});
+
+		// password change
+		const pwErr = errorBox();
+		const cur = h('input', { type: 'password', autocomplete: 'current-password', required: true });
+		const nxt = h('input', { type: 'password', autocomplete: 'new-password', required: true, minlength: 10 });
+		const pwForm = h(
+			'form',
+			{
+				class: 'mg-pw',
+				onsubmit: async (e: Event) => {
+					e.preventDefault();
+					say(pwErr, '');
+					try {
+						await post('/api/password', { current: cur.value, next: nxt.value });
+						cur.value = nxt.value = '';
+						say(pwErr, 'Password changed.');
+						pwErr.classList.add('okmsg');
+					} catch (x: any) {
+						pwErr.classList.remove('okmsg');
+						say(pwErr, x.message);
+					}
+				},
+			},
+			field('Current password', cur),
+			field('New password', nxt, 'At least 10 characters.'),
+			pwErr,
+			h('button', { class: 'mg-btn', type: 'submit' }, 'Change password'),
+		);
+
+		show(
+			h(
+				'header',
+				{ class: 'mg-top' },
+				h('h1', {}, 'Gallery manager'),
+				h(
+					'div',
+					{ class: 'mg-top-links' },
+					h('a', { class: 'mg-btn', href: '/gallery/', target: '_blank', rel: 'noopener' }, 'View gallery'),
+					h(
+						'button',
+						{
+							class: 'mg-btn',
+							type: 'button',
+							onclick: async () => {
+								await post('/api/logout', {}).catch(() => {});
+								loginScreen();
+							},
+						},
+						'Log out',
+					),
+				),
+			),
+			drop,
+			queue,
+			count,
+			list,
+			tagList,
+			h('details', { class: 'mg-details' }, h('summary', {}, 'Change password'), pwForm),
+		);
+		render();
+	}
+
+	// ---------- start ----------
+	(async () => {
+		try {
+			const s = await api('/api/status');
+			if (!s.configured) return setupScreen();
+			s.loggedIn ? dashboard() : loginScreen();
+		} catch {
+			show(h('p', { class: 'mg-error' }, 'Could not reach the server. Reload the page to try again.'));
+		}
+	})();
+</script>

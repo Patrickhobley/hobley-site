@@ -2,10 +2,14 @@
 import Base from '../../layouts/Base.astro';
 import SplitText from '../../components/SplitText.astro';
 import GalleryGrid from '../../components/GalleryGrid.astro';
-import { getGallery } from '../../lib/gallery';
+import { getGallery, getManagedGallery } from '../../lib/gallery';
 import '../../styles/gallery.css';
 
-const { items, usedTags } = await getGallery();
+// Uploads from /manage show here; until the first upload, the sample items are shown.
+export const prerender = false;
+const managed = await getManagedGallery((Astro.locals as any).runtime?.env?.DB);
+const { items, usedTags } = managed ?? (await getGallery());
+Astro.response.headers.set('Cache-Control', 'public, max-age=30');
 const photos = items.filter((i) => i.kind === 'image').length;
 const videos = items.filter((i) => i.kind === 'video').length;
 ---

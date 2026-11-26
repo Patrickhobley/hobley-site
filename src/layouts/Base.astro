@@ -15,20 +15,24 @@ interface Props {
 	scene?: boolean;
 	/** Play the short intro screen (home page only). */
 	splash?: boolean;
+	/** Keep search engines out (admin pages). */
+	noindex?: boolean;
+	/** No backdrop and no music player (admin pages). */
+	bare?: boolean;
 }
 
-const { title, description = SITE_DESCRIPTION, image, scene = true, splash = false } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image, scene = true, splash = false, noindex = false, bare = false } = Astro.props;
 const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 ---
 
 <!doctype html>
 <html lang="en-GB">
 	<head>
-		<BaseHead title={fullTitle} description={description} image={image} />
+		<BaseHead title={fullTitle} description={description} image={image} noindex={noindex} />
 	</head>
 	<body>
 		{splash && <Splash />}
-		{scene ? <Scene /> : <Scene gtaOnly />}
+		{!bare && (scene ? <Scene /> : <Scene gtaOnly />)}
 		<a class="skip" href="#content">Skip to content</a>
 		<Header>
 			<slot name="extra" slot="extra" />
@@ -36,7 +40,7 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 		<main id="content">
 			<slot />
 		</main>
-		<MusicPlayer />
+		{!bare && <MusicPlayer />}
 		<Footer />
 	</body>
 </html>
