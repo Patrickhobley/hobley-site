@@ -29,7 +29,7 @@ const { items } = Astro.props;
 				>
 					<span class="tile-photo">
 						{item.thumb ? (
-							<img src={item.thumb} alt="" loading="lazy" decoding="async" />
+							<img src={item.thumb} alt="" loading="lazy" decoding="async" data-fade />
 						) : (
 							<span class="tile-blank">{item.title}</span>
 						)}
@@ -44,16 +44,19 @@ const { items } = Astro.props;
 
 <dialog id="viewer" class="viewer" aria-label="Viewer">
 	<div class="viewer-body">
-		<div class="viewer-stage" data-stage></div>
+		<button type="button" class="v-close" data-close aria-label="Close viewer">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		<div class="viewer-frame">
+			<button type="button" class="v-nav v-prev" data-prev aria-label="Previous"><span aria-hidden="true">&lsaquo;</span></button>
+			<div class="viewer-stage" data-stage></div>
+			<button type="button" class="v-nav v-next" data-next aria-label="Next"><span aria-hidden="true">&rsaquo;</span></button>
+		</div>
 		<div class="viewer-info">
+			<p class="viewer-count" data-viewer-count aria-live="polite"></p>
 			<p class="viewer-title" data-viewer-title></p>
 			<p class="viewer-caption" data-viewer-caption></p>
 			<p class="viewer-tags" data-viewer-tags></p>
-		</div>
-		<div class="viewer-controls">
-			<button type="button" data-prev>Previous</button>
-			<button type="button" data-next>Next</button>
-			<button type="button" data-close>Close</button>
 		</div>
 	</div>
 </dialog>
@@ -64,11 +67,23 @@ const { items } = Astro.props;
 
 	if (grid && dialog instanceof HTMLDialogElement) {
 		const tiles = Array.from(grid.querySelectorAll('[data-tile]'));
+
+		// Prints fade in as they load
+		grid.querySelectorAll('img[data-fade]').forEach((img) => {
+			const done = () => img.classList.add('in');
+			if (img.complete && img.naturalWidth) done();
+			else {
+				img.addEventListener('load', done, { once: true });
+				img.addEventListener('error', done, { once: true });
+			}
+		});
 		const stage = dialog.querySelector('[data-stage]');
 		const titleEl = dialog.querySelector('[data-viewer-title]');
 		const captionEl = dialog.querySelector('[data-viewer-caption]');
 		const tagsEl = dialog.querySelector('[data-viewer-tags]');
+		const countEl = dialog.querySelector('[data-viewer-count]');
 		let current = 0;
+		let direction = 0;
 
 		const visibleTiles = () => tiles.filter((tile) => !tile.closest('li')?.hidden);
 
@@ -94,23 +109,38 @@ const { items } = Astro.props;
 				el = document.createElement('img');
 				el.src = d.image;
 				el.alt = d.alt || d.title;
+				el.className = 'photo';
+				el.dataset.dir = String(direction);
+				const show = () => el.classList.add('in');
+				el.addEventListener('load', show, { once: true });
+				el.addEventListener('error', show, { once: true });
 			}
 			if (el) stage.append(el);
+			const list = visibleTiles();
+			const at = list.indexOf(tile);
+			countEl.textContent = list.length > 1 && at >= 0 ? `${at + 1} of ${list.length}` : '';
+			// Warm up the neighbours so Next and Previous feel instant
+			[1, -1].forEach((n) => {
+				const near = list[(at + n + list.length) % list.length];
+				if (near && near !== tile && near.dataset.image && !near.dataset.videoFile && !near.dataset.embed) new Image().src = near.dataset.image;
+			});
 			titleEl.textContent = d.title;
 			captionEl.textContent = d.caption || '';
 			tagsEl.textContent = d.tagTitles || '';
 		}
 
 		function open(tile) {
+			direction = 0;
 			current = Math.max(0, visibleTiles().indexOf(tile));
 			render(tile);
 			if (!dialog.open) dialog.showModal();
 		}
 
-		function step(direction) {
+		function step(dir) {
 			const list = visibleTiles();
 			if (!list.length) return;
-			current = (current + direction + list.length) % list.length;
+			current = (current + dir + list.length) % list.length;
+			direction = dir;
 			render(list[current]);
 		}
 
@@ -127,9 +157,24 @@ const { items } = Astro.props;
 			if (event.key === 'ArrowLeft') step(-1);
 		});
 
+		// Swipe on touch screens
+		let startX = 0;
+		let startY = 0;
+		stage.addEventListener('touchstart', (event) => {
+			startX = event.touches[0].clientX;
+			startY = event.touches[0].clientY;
+		}, { passive: true });
+		stage.addEventListener('touchend', (event) => {
+			if (event.target instanceof HTMLVideoElement || event.target instanceof HTMLIFrameElement) return;
+			const dx = event.changedTouches[0].clientX - startX;
+			const dy = event.changedTouches[0].clientY - startY;
+			if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+		}, { passive: true });
+
 		// Tag filter (only on the Work page)
 		const chips = Array.from(document.querySelectorAll('[data-filter]'));
 		const emptyNote = document.querySelector('[data-filter-empty]');
+		const countNote = document.querySelector('[data-count]');
 
 		function applyFilter(tag) {
 			let shown = 0;
@@ -148,8 +193,10 @@ const { items } = Astro.props;
 				chip.setAttribute('aria-pressed', String((chip.dataset.filter || '') === (tag || '')));
 			});
 			if (emptyNote) emptyNote.hidden = shown > 0;
+			if (countNote) countNote.textContent = tag ? `Showing ${shown} of ${tiles.length}` : `${tiles.length} ${tiles.length === 1 ? 'print' : 'prints'}`;
 		}
 
+		if (countNote) countNote.textContent = `${tiles.length} ${tiles.length === 1 ? 'print' : 'prints'}`;
 		if (chips.length) {
 			const start = new URL(location.href).searchParams.get('tag') || '';
 			const known = chips.some((chip) => chip.dataset.filter === start);

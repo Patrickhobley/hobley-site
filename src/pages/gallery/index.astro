@@ -12,6 +12,7 @@ const { items, usedTags } = managed ?? (await getGallery());
 Astro.response.headers.set('Cache-Control', 'public, max-age=30');
 const photos = items.filter((i) => i.kind === 'image').length;
 const videos = items.filter((i) => i.kind === 'video').length;
+const tagCount = (slug: string) => items.filter((i) => i.tags.some((t) => t.slug === slug)).length;
 ---
 
 <Base
@@ -29,7 +30,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 					photos > 0 && (
 						<li>
 							<button type="button" class="chip" data-filter="kind:image" aria-pressed="false">
-								Photos
+								Photos <span class="chip-n">{photos}</span>
 							</button>
 						</li>
 					)
@@ -38,7 +39,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 					videos > 0 && (
 						<li>
 							<button type="button" class="chip" data-filter="kind:video" aria-pressed="false">
-								Videos
+								Videos <span class="chip-n">{videos}</span>
 							</button>
 						</li>
 					)
@@ -47,7 +48,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 					usedTags.map((tag) => (
 						<li>
 							<button type="button" class="chip" data-filter={tag.slug} aria-pressed="false">
-								{tag.title}
+								{tag.title} <span class="chip-n">{tagCount(tag.slug)}</span>
 							</button>
 						</li>
 					))
@@ -62,6 +63,7 @@ const videos = items.filter((i) => i.kind === 'video').length;
 		{
 			items.length > 0 ? (
 				<>
+					<p class="g-count" data-count aria-live="polite" />
 					<GalleryGrid items={items} />
 					<p class="g-empty" data-filter-empty hidden>
 						Nothing in this category yet.

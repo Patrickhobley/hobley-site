@@ -140,6 +140,31 @@ html[data-theme="gta"] .viewer {
 	box-shadow: 0 0 40px rgba(255, 46, 147, 0.5), 10px 10px 0 rgba(0, 0, 0, 0.5);
 }
 
+html[data-theme="gta"] .v-nav,
+html[data-theme="gta"] .v-close {
+	border-color: var(--neon);
+	color: var(--neon);
+	box-shadow: 0 0 14px rgba(25, 227, 216, 0.4);
+}
+html[data-theme="gta"] .v-nav:hover,
+html[data-theme="gta"] .v-close:hover {
+	background: linear-gradient(135deg, #ffd23f, #ff2e93);
+	border-color: transparent;
+	color: #1a0630;
+	box-shadow: 0 0 22px rgba(255, 46, 147, 0.7);
+}
+html[data-theme="gta"] .viewer-title {
+	color: var(--stripe-1);
+	text-shadow: 2px 2px 0 var(--stripe-3);
+}
+html[data-theme="gta"] .viewer-count,
+html[data-theme="gta"] .g-count {
+	color: var(--neon);
+}
+html[data-theme="gta"] .chip-n {
+	background: rgba(255, 255, 255, 0.16);
+}
+
 /* Footer */
 html[data-theme="gta"] .site-footer {
 	border-top-color: var(--stripe-3);
