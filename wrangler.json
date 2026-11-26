@@ -16,6 +16,10 @@
 	"previews": {},
 	"routes": [
 		{
+			"pattern": "hobley.me",
+			"custom_domain": true
+		},
+		{
 			"pattern": "gta.hobley.me",
 			"custom_domain": true
 		}
