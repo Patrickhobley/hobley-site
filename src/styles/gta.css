@@ -78,7 +78,7 @@ html[data-theme="gta"] .group-title {
 
 /* Buttons: glass with a neon edge */
 html[data-theme="gta"] .link-button {
-	background: rgba(255, 255, 255, 0.07);
+	background: rgba(20, 6, 46, 0.82);
 	color: #fff;
 	border: 2px solid var(--neon);
 	box-shadow: 0 0 18px rgba(25, 227, 216, 0.35), 5px 5px 0 rgba(0, 0, 0, 0.4);

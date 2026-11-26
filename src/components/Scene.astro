@@ -234,22 +234,23 @@ const prints = [
 	}
 	.skyline.far {
 		transform: translateZ(10px) translateX(calc(var(--mx) * -7px));
-		opacity: 0.85;
+		opacity: 0.7;
 	}
 	.skyline.far i {
 		background:
 			repeating-linear-gradient(90deg, transparent 0 5px, #1c0a3d 5px 8px),
 			repeating-linear-gradient(0deg, transparent 0 7px, #1c0a3d 7px 11px),
-			linear-gradient(color-mix(in srgb, var(--win) 55%, #1c0a3d), color-mix(in srgb, var(--win) 55%, #1c0a3d));
+			linear-gradient(color-mix(in srgb, var(--win) 32%, #1c0a3d), color-mix(in srgb, var(--win) 32%, #1c0a3d));
 	}
 	.skyline.near {
 		transform: translateZ(30px) translateX(calc(var(--mx) * -16px));
+		opacity: 0.85;
 	}
 	.skyline.near i {
 		background:
 			repeating-linear-gradient(90deg, transparent 0 7px, #0d0322 7px 11px),
 			repeating-linear-gradient(0deg, transparent 0 9px, #0d0322 9px 14px),
-			linear-gradient(color-mix(in srgb, var(--win) 70%, #0d0322), color-mix(in srgb, var(--win) 70%, #0d0322));
+			linear-gradient(color-mix(in srgb, var(--win) 42%, #0d0322), color-mix(in srgb, var(--win) 42%, #0d0322));
 	}
 
 	/* A car cruising along the horizon */
