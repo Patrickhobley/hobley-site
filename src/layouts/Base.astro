@@ -28,7 +28,7 @@ const fullTitle = title ? `${title} | ${SITE_TITLE}` : SITE_TITLE;
 	</head>
 	<body>
 		{splash && <Splash />}
-		{scene && <Scene />}
+		{scene ? <Scene /> : <Scene gtaOnly />}
 		<a class="skip" href="#content">Skip to content</a>
 		<Header>
 			<slot name="extra" slot="extra" />

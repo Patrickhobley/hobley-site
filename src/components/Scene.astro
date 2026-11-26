@@ -1,6 +1,27 @@
 ---
 // A 3D photo-lab backdrop made from CSS only: striped sun, gridded floor rushing
 // toward you, and photo prints floating at different depths. It sits behind the page.
+interface Props {
+	/** Only show this scene in the Miami theme (used on pages that are plain in the classic theme). */
+	gtaOnly?: boolean;
+}
+const { gtaOnly = false } = Astro.props;
+
+// Miami skyline: two layers of buildings, far and near, each with its own window colour.
+const wins = ['#19e3d8', '#ff2e93', '#ffb23f', '#b266ff'];
+const far = Array.from({ length: 28 }, (_, i) => ({
+	l: i * 3.7 - 3,
+	w: 3.4 + ((i * 7) % 5) * 0.55,
+	h: 8 + ((i * 13) % 9) * 2.6,
+	c: wins[i % 4],
+}));
+const near = Array.from({ length: 15 }, (_, i) => ({
+	l: i * 7.3 - 3,
+	w: 5.2 + ((i * 5) % 4) * 0.9,
+	h: 5 + ((i * 11) % 7) * 2.1,
+	c: wins[(i + 2) % 4],
+}));
+
 const prints = [
 	{ x: 'calc(-1 * max(22rem, 34vw))', y: '-14vh', z: '-120px', r: '-14deg', ry: '24deg', s: 1, d: '0s', c: 1 },
 	{ x: 'max(22rem, 33vw)', y: '-24vh', z: '-260px', r: '10deg', ry: '-28deg', s: 1.2, d: '-2s', c: 2 },
@@ -24,9 +45,16 @@ const prints = [
 		</g>
 	</defs>
 </svg>
-<div class="scene" aria-hidden="true">
+<div class:list={["scene", { "gta-only": gtaOnly }]} aria-hidden="true">
 	<div class="stage">
 		<div class="sun"></div>
+		<div class="skyline far">
+			{far.map((b) => <i style={`--l:${b.l}vw;--w:${b.w}vw;--h:${b.h}vh;--win:${b.c}`} />)}
+		</div>
+		<div class="skyline near">
+			{near.map((b) => <i style={`--l:${b.l}vw;--w:${b.w}vw;--h:${b.h}vh;--win:${b.c}`} />)}
+		</div>
+		<div class="car"><i></i><i></i></div>
 		<div class="floor"><div class="grid"></div></div>
 		<svg class="palm palm-l" viewBox="0 0 200 320" aria-hidden="true"><use href="#palm" /></svg>
 		<svg class="palm palm-r" viewBox="0 0 200 320" aria-hidden="true"><use href="#palm" /></svg>
@@ -176,13 +204,97 @@ const prints = [
 			linear-gradient(to bottom, #35655d 0 45%, #f2b632 45% 60%, #163f3a 60%);
 	}
 
+	.gta-only {
+		display: none;
+	}
+	:global(html[data-theme='gta']) .gta-only {
+		display: block;
+	}
+
+	/* Miami skyline: buildings with lit windows, in two depth layers that shift against each other */
+	.skyline {
+		display: none;
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		transform-style: preserve-3d;
+	}
+	:global(html[data-theme='gta']) .skyline {
+		display: block;
+	}
+	.skyline i {
+		position: absolute;
+		left: var(--l);
+		top: 58vh;
+		width: var(--w);
+		height: var(--h);
+		translate: 0 -100%;
+		border-top: 2px solid var(--win);
+		box-shadow: 0 -4px 18px color-mix(in srgb, var(--win) 55%, transparent);
+	}
+	.skyline.far {
+		transform: translateZ(10px) translateX(calc(var(--mx) * -7px));
+		opacity: 0.85;
+	}
+	.skyline.far i {
+		background:
+			repeating-linear-gradient(90deg, transparent 0 5px, #1c0a3d 5px 8px),
+			repeating-linear-gradient(0deg, transparent 0 7px, #1c0a3d 7px 11px),
+			linear-gradient(color-mix(in srgb, var(--win) 55%, #1c0a3d), color-mix(in srgb, var(--win) 55%, #1c0a3d));
+	}
+	.skyline.near {
+		transform: translateZ(30px) translateX(calc(var(--mx) * -16px));
+	}
+	.skyline.near i {
+		background:
+			repeating-linear-gradient(90deg, transparent 0 7px, #0d0322 7px 11px),
+			repeating-linear-gradient(0deg, transparent 0 9px, #0d0322 9px 14px),
+			linear-gradient(color-mix(in srgb, var(--win) 70%, #0d0322), color-mix(in srgb, var(--win) 70%, #0d0322));
+	}
+
+	/* A car cruising along the horizon */
+	.car {
+		display: none;
+		position: absolute;
+		left: 0;
+		top: calc(58vh + 1.2vh);
+		width: 1.6rem;
+		height: 0.4rem;
+		border-radius: 2px;
+		background: #05010f;
+		transform: translateZ(40px);
+		animation: cruise 14s linear infinite;
+	}
+	:global(html[data-theme='gta']) .car {
+		display: block;
+	}
+	.car i {
+		position: absolute;
+		top: 0.1rem;
+		width: 0.25rem;
+		height: 0.2rem;
+		border-radius: 50%;
+		background: #ff3b3b;
+		box-shadow: 0 0 10px 3px rgba(255, 59, 59, 0.9);
+	}
+	.car i:first-child { left: 0.1rem; }
+	.car i:last-child { right: 0.1rem; }
+	@keyframes cruise {
+		from { translate: -12vw 0; }
+		to { translate: 112vw 0; }
+	}
+
+	:global(html[data-theme='gta']) .prints {
+		display: none;
+	}
 	.palm {
 		display: none;
 		position: absolute;
 		top: 58vh;
 		height: min(46vh, 28rem);
 		width: auto;
-		translate: 0 -94%;
+		translate: calc(var(--mx) * -26px) -94%;
+		z-index: 3;
 		color: #0a0218;
 		filter: drop-shadow(0 0 1.2rem rgba(255, 46, 147, 0.55));
 		transform-origin: 50% 100%;
@@ -194,6 +306,7 @@ const prints = [
 	.palm-r {
 		right: max(-1rem, 2vw);
 		scale: -0.85 0.85;
+		translate: calc(var(--mx) * 26px) -94%;
 		animation-delay: -3s;
 	}
 	:global(html[data-theme='gta']) .palm {
@@ -253,6 +366,13 @@ const prints = [
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
+		.car {
+			animation: none;
+			display: none !important;
+		}
+		.palm {
+			animation: none;
+		}
 		.grid,
 		.sun,
 		.print-inner {
