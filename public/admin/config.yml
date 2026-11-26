@@ -246,8 +246,17 @@ collections:
           - label: Artist
             name: artist
             widget: string
-          - label: YouTube link
-            name: url
+          - label: Audio file (best option)
+            name: audio
+            widget: file
+            required: false
+            choose_url: false
+            media_folder: /public/audio
+            public_folder: /audio
+            hint: Upload an MP3 you have the rights to use (up to 25 MB). It plays in full, with no video and no Spotify needed.
+          - label: Spotify song link
+            name: spotify
             widget: string
-            pattern: ["^https://(www\\.)?(youtube\\.com/watch\\?v=|youtu\\.be/).{11}.*", "Paste a YouTube video link"]
-            hint: The song plays from this YouTube video in the player on the Miami theme. Use an official upload so it can be embedded.
+            required: false
+            pattern: ["^https://open\\.spotify\\.com/(intl-[a-z]+/)?track/[A-Za-z0-9]{22}.*", "Paste a Spotify song link"]
+            hint: Used when there is no audio file. Visitors who are not logged in to Spotify hear a 30 second preview.

@@ -1,45 +1,45 @@
 ---
-// Miami theme music player: plays a song from an official YouTube video, with the video shown in a small window.
-// The song is set in /admin (Music player). Nothing is hosted here; the audio streams from YouTube.
+// Miami theme music player. Music only, no video.
+// Plays an uploaded audio file if there is one (full song), otherwise a Spotify song in Spotify's slim player.
+// Both are set in /admin (Music player).
 import music from '../content/music.json';
 
-const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
+const m = music as { title: string; artist: string; audio?: string; spotify?: string };
+const audio = m.audio || '';
+const spotifyId = /track\/([A-Za-z0-9]{22})/.exec(m.spotify ?? '')?.[1] ?? '';
+const mode = audio ? 'audio' : spotifyId ? 'spotify' : '';
 ---
 
 {
-	id && (
-		<aside class="player" aria-label="Music player" data-player data-video={id}>
-			<div class="pl-head">
-				<div class="eq" aria-hidden="true">
-					<i />
-					<i />
-					<i />
-					<i />
+	mode && (
+		<aside class={`player mode-${mode}`} aria-label="Music player" data-player data-mode={mode} data-spotify={spotifyId}>
+			{mode === 'audio' && (
+				<div class="pl-head">
+					<div class="eq" aria-hidden="true">
+						<i />
+						<i />
+						<i />
+						<i />
+					</div>
+					<div class="pl-meta">
+						<p class="pl-now">Now playing</p>
+						<p class="pl-title">
+							{m.title}
+							<span>{m.artist}</span>
+						</p>
+					</div>
+					<button class="pl-btn" type="button" data-toggle aria-label="Play music">
+						<svg class="i-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+							<path d="M7 4.5v15l13-7.5z" fill="currentColor" />
+						</svg>
+						<svg class="i-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+							<path d="M6 4.5h4v15H6zM14 4.5h4v15h-4z" fill="currentColor" />
+						</svg>
+					</button>
+					<audio src={audio} preload="none" loop data-audio />
 				</div>
-				<div class="pl-meta">
-					<p class="pl-now">Now playing</p>
-					<p class="pl-title">
-						{music.title}
-						<span>{music.artist}</span>
-					</p>
-				</div>
-				<button class="pl-btn" type="button" data-toggle aria-label="Play music">
-					<svg class="i-play" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-						<path d="M7 4.5v15l13-7.5z" fill="currentColor" />
-					</svg>
-					<svg class="i-pause" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
-						<path d="M6 4.5h4v15H6zM14 4.5h4v15h-4z" fill="currentColor" />
-					</svg>
-				</button>
-				<button class="pl-min" type="button" data-min aria-label="Make the video window smaller" aria-pressed="false">
-					<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-						<path d="M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round" />
-					</svg>
-				</button>
-			</div>
-			<div class="pl-screen">
-				<div id="yt-slot" />
-			</div>
+			)}
+			{mode === 'spotify' && <div class="sp-slot"><div id="sp-embed" /></div>}
 		</aside>
 	)
 }
@@ -51,7 +51,7 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 		right: 1rem;
 		bottom: 1rem;
 		z-index: 60;
-		width: min(20rem, calc(100vw - 2rem));
+		width: min(21rem, calc(100vw - 2rem));
 		padding: 0.6rem;
 		border-radius: 14px;
 		background: linear-gradient(160deg, rgba(42, 10, 77, 0.94), rgba(18, 5, 43, 0.96));
@@ -63,16 +63,29 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 	:global(html[data-theme='gta']) .player {
 		display: block;
 	}
+	.mode-spotify {
+		padding: 0.35rem;
+	}
+	.sp-slot {
+		min-height: 80px;
+		border-radius: 12px;
+		overflow: hidden;
+	}
+	.sp-slot :global(iframe) {
+		display: block;
+		width: 100%;
+		border: 0;
+	}
 	.pl-head {
 		display: flex;
 		align-items: center;
-		gap: 0.6rem;
+		gap: 0.7rem;
 	}
 	.eq {
 		display: flex;
 		align-items: flex-end;
 		gap: 3px;
-		height: 1.6rem;
+		height: 1.8rem;
 		flex: none;
 	}
 	.eq i {
@@ -107,7 +120,7 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 	}
 	.pl-title {
 		font-weight: 800;
-		font-size: 0.98rem;
+		font-size: 1rem;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -118,19 +131,16 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 		margin-left: 0.4rem;
 		font-size: 0.85rem;
 	}
-	.pl-btn,
-	.pl-min {
+	.pl-btn {
 		display: grid;
 		place-items: center;
-		border: 0;
-		cursor: pointer;
 		flex: none;
-		color: #1a0630;
-	}
-	.pl-btn {
-		width: 2.6rem;
-		height: 2.6rem;
+		width: 2.8rem;
+		height: 2.8rem;
+		border: 0;
 		border-radius: 50%;
+		cursor: pointer;
+		color: #1a0630;
 		background: linear-gradient(135deg, #ffd23f, #ff2e93);
 		box-shadow: 0 0 16px rgba(255, 46, 147, 0.6);
 		transition: transform 0.12s;
@@ -138,47 +148,14 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 	.pl-btn:hover {
 		transform: scale(1.1);
 	}
-	.pl-min {
-		width: 2rem;
-		height: 2rem;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.12);
-		color: #fff;
-	}
-	.pl-min:hover {
-		background: rgba(255, 255, 255, 0.25);
-	}
 	.i-pause { display: none; }
 	.player.playing .i-play { display: none; }
 	.player.playing .i-pause { display: block; }
-
-	/* Video window, always visible while the song plays */
-	.pl-screen {
-		margin-top: 0.6rem;
-		aspect-ratio: 16 / 9;
-		border-radius: 8px;
-		overflow: hidden;
-		background: #000;
-		transition: width 0.25s, margin 0.25s;
-	}
-	.pl-screen :global(iframe) {
-		display: block;
-		width: 100%;
-		height: 100%;
-		border: 0;
-	}
-	.player.small .pl-screen {
-		width: 6rem;
-		margin-left: auto;
-	}
 	@media (max-width: 40rem) {
 		.player {
 			right: 0.5rem;
 			bottom: 0.5rem;
 			width: calc(100vw - 1rem);
-		}
-		.player.small .pl-screen {
-			width: 7.5rem;
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
@@ -192,61 +169,46 @@ const id = /(?:v=|youtu\.be\/|embed\/)([\w-]{11})/.exec(music.url)?.[1] ?? '';
 
 	if (root && gta) {
 		const win = window as any;
-		const videoId = root.dataset.video!;
-		const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
-		const min = root.querySelector<HTMLButtonElement>('[data-min]')!;
-		let player: any = null;
 		let wantPlay = false;
+		let play = () => {};
 
-		const setPlaying = (on: boolean) => {
-			root.classList.toggle('playing', on);
-			toggle.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
-		};
-
-		const create = () => {
-			player = new win.YT.Player('yt-slot', {
-				videoId,
-				playerVars: { playsinline: 1, rel: 0, modestbranding: 1, loop: 1, playlist: videoId },
-				events: {
-					onReady: () => {
-						if (wantPlay) player.playVideo();
+		if (root.dataset.mode === 'audio') {
+			const el = root.querySelector<HTMLAudioElement>('[data-audio]')!;
+			const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]')!;
+			const setPlaying = (on: boolean) => {
+				root.classList.toggle('playing', on);
+				toggle.setAttribute('aria-label', on ? 'Pause music' : 'Play music');
+			};
+			el.addEventListener('play', () => setPlaying(true));
+			el.addEventListener('pause', () => setPlaying(false));
+			play = () => void el.play().catch(() => {});
+			toggle.addEventListener('click', () => (el.paused ? play() : el.pause()));
+		} else {
+			// Spotify's slim player (music only). It loads Spotify's own script.
+			let controller: any = null;
+			play = () => {
+				wantPlay = true;
+				controller?.play();
+			};
+			win.onSpotifyIframeApiReady = (api: any) => {
+				const target = document.getElementById('sp-embed');
+				api.createController(
+					target,
+					{ uri: `spotify:track:${root.dataset.spotify}`, width: '100%', height: 80, theme: 0 },
+					(c: any) => {
+						controller = c;
+						c.addListener('playback_update', (e: any) => root.classList.toggle('playing', !e.data.isPaused));
+						if (wantPlay) c.play();
 					},
-					onStateChange: (e: any) => setPlaying(e.data === 1 || e.data === 3),
-				},
-			});
-		};
+				);
+			};
+			const tag = document.createElement('script');
+			tag.src = 'https://open.spotify.com/embed/iframe-api/v1';
+			tag.async = true;
+			document.head.appendChild(tag);
+		}
 
-		// Load YouTube's player script once.
-		const prior = win.onYouTubeIframeAPIReady;
-		win.onYouTubeIframeAPIReady = () => {
-			prior?.();
-			create();
-		};
-		const tag = document.createElement('script');
-		tag.src = 'https://www.youtube.com/iframe_api';
-		document.head.appendChild(tag);
-
-		const play = () => {
-			wantPlay = true;
-			if (player?.playVideo) player.playVideo();
-		};
-		const pause = () => {
-			wantPlay = false;
-			player?.pauseVideo?.();
-		};
-
-		toggle.addEventListener('click', () => (root.classList.contains('playing') ? pause() : play()));
-		min.addEventListener('click', () => {
-			const small = root.classList.toggle('small');
-			min.setAttribute('aria-pressed', String(small));
-			min.setAttribute('aria-label', small ? 'Make the video window bigger' : 'Make the video window smaller');
-		});
 		// The intro screen asks people to press start; that tap is what lets the music begin.
 		document.addEventListener('hobley:start', play);
-
-		if (matchMedia('(max-width: 40rem)').matches) {
-			root.classList.add('small');
-			min.setAttribute('aria-pressed', 'true');
-		}
 	}
 </script>
