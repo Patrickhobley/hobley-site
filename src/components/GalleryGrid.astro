@@ -25,17 +25,16 @@ const { items } = Astro.props;
 					data-video-file={item.videoFile ?? ''}
 					data-tag-slugs={item.tags.map((t) => t.slug).join(' ')}
 					data-tag-titles={item.tags.map((t) => t.title).join(', ')}
-					aria-label={`${item.kind === 'video' ? 'Play video: ' : 'View photo: '}${item.title}`}
+					aria-label={item.kind === 'video' ? 'Play video' : 'View photo'}
 				>
 					<span class="tile-photo">
 						{item.thumb ? (
 							<img src={item.thumb} alt="" loading="lazy" decoding="async" data-fade />
 						) : (
-							<span class="tile-blank">{item.title}</span>
+							<span class="tile-blank">{item.kind === 'video' ? 'Video' : 'Photo'}</span>
 						)}
 						{item.kind === 'video' && <span class="play" aria-hidden="true" />}
 					</span>
-					<span class="tile-title">{item.title}</span>
 				</button>
 			</li>
 		))
@@ -54,7 +53,6 @@ const { items } = Astro.props;
 		</div>
 		<div class="viewer-info">
 			<p class="viewer-count" data-viewer-count aria-live="polite"></p>
-			<p class="viewer-title" data-viewer-title></p>
 			<p class="viewer-caption" data-viewer-caption></p>
 			<p class="viewer-tags" data-viewer-tags></p>
 		</div>
@@ -68,6 +66,20 @@ const { items } = Astro.props;
 	if (grid && dialog instanceof HTMLDialogElement) {
 		const tiles = Array.from(grid.querySelectorAll('[data-tile]'));
 
+		// Masonry: each print takes as many 8px rows as it is tall, so rows read left to right with no gaps or cropping
+		const ROW = 8;
+		const fit = (li) => {
+			const tile = li.firstElementChild;
+			if (!tile || li.hidden) return;
+			const pad = parseFloat(getComputedStyle(li).paddingBottom) || 0;
+			li.style.setProperty('--span', String(Math.ceil((tile.getBoundingClientRect().height + pad) / ROW)));
+		};
+		const sizer = new ResizeObserver((entries) => entries.forEach((e) => fit(e.target.closest('li'))));
+		grid.querySelectorAll('li').forEach((li) => {
+			fit(li);
+			sizer.observe(li.firstElementChild);
+		});
+
 		// Prints fade in as they load
 		grid.querySelectorAll('img[data-fade]').forEach((img) => {
 			const done = () => img.classList.add('in');
@@ -78,7 +90,6 @@ const { items } = Astro.props;
 			}
 		});
 		const stage = dialog.querySelector('[data-stage]');
-		const titleEl = dialog.querySelector('[data-viewer-title]');
 		const captionEl = dialog.querySelector('[data-viewer-caption]');
 		const tagsEl = dialog.querySelector('[data-viewer-tags]');
 		const countEl = dialog.querySelector('[data-viewer-count]');
@@ -94,7 +105,7 @@ const { items } = Astro.props;
 			if (d.embed) {
 				el = document.createElement('iframe');
 				el.src = d.embed;
-				el.title = d.title;
+				el.title = 'Video';
 				el.allow = 'autoplay; fullscreen; picture-in-picture';
 				el.allowFullscreen = true;
 				el.className = 'embed';
@@ -108,7 +119,7 @@ const { items } = Astro.props;
 			} else if (d.image) {
 				el = document.createElement('img');
 				el.src = d.image;
-				el.alt = d.alt || d.title;
+				el.alt = d.alt || 'Photograph by Patrick Hobley';
 				el.className = 'photo';
 				el.dataset.dir = String(direction);
 				const show = () => el.classList.add('in');
@@ -124,7 +135,6 @@ const { items } = Astro.props;
 				const near = list[(at + n + list.length) % list.length];
 				if (near && near !== tile && near.dataset.image && !near.dataset.videoFile && !near.dataset.embed) new Image().src = near.dataset.image;
 			});
-			titleEl.textContent = d.title;
 			captionEl.textContent = d.caption || '';
 			tagsEl.textContent = d.tagTitles || '';
 		}

@@ -137,7 +137,7 @@ import '../../styles/manage.css';
 
 	async function prepImage(file: File) {
 		const bmp = await createImageBitmap(file);
-		const thumb = await scaled(bmp, bmp.width, bmp.height, 800, 0.8, 'image/webp');
+		const thumb = await scaled(bmp, bmp.width, bmp.height, 1200, 0.85, 'image/webp');
 		const keep = file.type === 'image/gif' || (file.size <= 1.5 * 1024 * 1024 && Math.max(bmp.width, bmp.height) <= 2400);
 		const full = keep ? file : await scaled(bmp, bmp.width, bmp.height, 2400, 0.86, 'image/webp');
 		return { full, thumb };
