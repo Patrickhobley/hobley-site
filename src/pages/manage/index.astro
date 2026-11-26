@@ -13,7 +13,10 @@ import '../../styles/manage.css';
 	type Item = { id: string; title: string; kind: 'image' | 'video'; caption: string; alt: string; tags: string[]; url: string; thumb: string | null };
 
 	const app = document.getElementById('app')!;
-	const MAX = 25 * 1024 * 1024;
+	const MAX = 25 * 1024 * 1024; // photos
+	const MAX_VIDEO = 150 * 1024 * 1024;
+	const CHUNK = 20 * 1024 * 1024; // must match the server
+	const uid = () => [...crypto.getRandomValues(new Uint8Array(8))].map((b) => b.toString(16).padStart(2, '0')).join('');
 
 	// ---------- helpers ----------
 	function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Record<string, any> = {}, ...kids: (Node | string | null | false)[]) {
@@ -280,7 +283,7 @@ import '../../styles/manage.css';
 					const isVideo = file.type.startsWith('video/');
 					const isImage = file.type.startsWith('image/');
 					if (!isVideo && !isImage) throw new Error('Not a photo or video.');
-					if (isVideo && file.size > MAX) throw new Error('Over 25 MB. Trim or compress the video first.');
+					if (isVideo && file.size > MAX_VIDEO) throw new Error('Over 150 MB. Trim or compress the video first.');
 
 					let body: Blob = file;
 					let thumb: Blob | null = null;
@@ -295,11 +298,36 @@ import '../../styles/manage.css';
 					} else {
 						thumb = await videoPoster(file);
 					}
-					if (body.size > MAX) throw new Error('Still over 25 MB. Try a smaller photo.');
+					if (isImage && body.size > MAX) throw new Error('Still over 25 MB. Try a smaller photo.');
 
 					msg.textContent = 'Uploading…';
-					const created = await send(`/api/upload?name=${encodeURIComponent(file.name)}`, body, (p) => (bar.value = p));
-					if (thumb) await send(`/api/upload?thumb=${created.id}`, thumb);
+					let id: string;
+					if (isVideo) {
+						id = uid();
+						const type = file.type || 'video/mp4';
+						const chunks = Math.max(1, Math.ceil(file.size / CHUNK));
+						try {
+							for (let i = 0; i < chunks; i++) {
+								const part = file.slice(i * CHUNK, (i + 1) * CHUNK, type);
+								const url = `/api/upload?uid=${id}&chunk=${i}&chunks=${chunks}&name=${encodeURIComponent(file.name)}`;
+								const progress = (p: number) => {
+									bar.value = (i + p) / chunks;
+									msg.textContent = chunks > 1 ? `Uploading ${i + 1} of ${chunks}…` : 'Uploading…';
+								};
+								try {
+									await send(url, part, progress);
+								} catch {
+									await send(url, part, progress); // one retry per piece
+								}
+							}
+						} catch (x) {
+							await api(`/api/upload?uid=${id}`, { method: 'DELETE' }).catch(() => {});
+							throw x;
+						}
+					} else {
+						id = (await send(`/api/upload?name=${encodeURIComponent(file.name)}`, body, (p) => (bar.value = p))).id;
+					}
+					if (thumb) await send(`/api/upload?thumb=${id}`, thumb);
 					bar.value = 1;
 					msg.textContent = 'Done';
 					row.classList.add('ok');
@@ -326,7 +354,7 @@ import '../../styles/manage.css';
 			'label',
 			{ class: 'mg-drop' },
 			h('strong', {}, 'Drop photos and videos here'),
-			h('span', {}, 'or tap to choose from your device. Photos are resized for you. Videos can be up to 25 MB.'),
+			h('span', {}, 'or tap to choose from your device. Photos are resized for you. Videos can be up to 150 MB.'),
 			input,
 		);
 		['dragenter', 'dragover'].forEach((t) =>

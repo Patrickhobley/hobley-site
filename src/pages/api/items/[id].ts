@@ -27,6 +27,9 @@ export const DELETE: APIRoute = async ({ request, locals, params }) => {
 	const { DB, MEDIA } = envOf(locals);
 	const row = await DB.prepare("SELECT media_key, thumb_key FROM items WHERE id = ?").bind(params.id).first();
 	if (!row) return json({ error: "Not found." }, 404);
+	const { metadata } = await MEDIA.getWithMetadata(row.media_key);
+	const chunks = Number((metadata as any)?.chunks || 0);
+	for (let i = 0; i < chunks; i++) await MEDIA.delete(`c/${params.id}.${i}`);
 	await MEDIA.delete(row.media_key);
 	if (row.thumb_key) await MEDIA.delete(row.thumb_key);
 	await DB.prepare("DELETE FROM items WHERE id = ?").bind(params.id).run();
