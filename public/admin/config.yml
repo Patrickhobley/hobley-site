@@ -254,9 +254,9 @@ collections:
             media_folder: /public/audio
             public_folder: /audio
             hint: Upload an MP3 you have the rights to use (up to 25 MB). It plays in full, with no video and no Spotify needed.
-          - label: Spotify song link
+          - label: Spotify link (song, playlist or album)
             name: spotify
             widget: string
             required: false
-            pattern: ["^https://open\\.spotify\\.com/(intl-[a-z]+/)?track/[A-Za-z0-9]{22}.*", "Paste a Spotify song link"]
-            hint: Used when there is no audio file. Visitors who are not logged in to Spotify hear a 30 second preview.
+            pattern: ["^https://open\\.spotify\\.com/(intl-[a-z]+/)?(track|playlist|album)/[A-Za-z0-9]{22}.*", "Paste a Spotify song, playlist or album link"]
+            hint: Used when there is no audio file. Visitors who are not logged in to Spotify hear 30 second previews.
