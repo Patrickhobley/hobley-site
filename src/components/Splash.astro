@@ -101,6 +101,16 @@ const word = 'hobley';
 	:global(html:not(.seen)) {
 		--intro: 2.1s;
 	}
+	:global(html[data-theme='gta']) .splash-word {
+		text-shadow: none;
+		filter: drop-shadow(4px 4px 0 #3b0a5c) drop-shadow(0 0 26px rgba(255, 46, 147, 0.7));
+	}
+	:global(html[data-theme='gta']) .sp-ch {
+		background: linear-gradient(to bottom, #ffe14d 0%, #ff8a3d 45%, #ff2e93 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
 	/* Miami theme: the screen stays until start is pressed */
 	:global(html[data-theme='gta']:not(.seen)) {
 		--intro: 0.3s;
